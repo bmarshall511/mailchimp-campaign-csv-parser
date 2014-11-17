@@ -540,59 +540,62 @@ class MailChimp_Campaign_CSV_Parser
         $this->temp['group'] = $group;
         $this->temp['data_point'] = $data_point;
 
-        $this->add_to_array( 'total_campaigns', 1 );
-        $this->add_to_array( 'total_recipients', $values['total_recipients'] );
-        $this->add_to_array( 'total_successful_deliveries', $values['successful_deliveries'] );
-        $this->add_to_array( 'total_soft_bounces', $values['soft_bounces'] );
-        $this->add_to_array( 'total_hard_bounces', $values['hard_bounces'] );
+        $this->add_to_array( 'campaigns', 1 );
+        $this->add_to_array( 'recipients', $values['recipients'] );
+        $this->add_to_array( 'successful_deliveries', $values['successful_deliveries'] );
+        $this->add_to_array( 'soft_bounces', $values['soft_bounces'] );
+        $this->add_to_array( 'hard_bounces', $values['hard_bounces'] );
         $this->add_to_array( 'total_bounces', $values['total_bounces'] );
-        $this->add_to_array( 'total_times_forwarded', $values['times_forwarded'] );
-        $this->add_to_array( 'total_unique_opens', $values['unique_opens'] );
-        $this->add_to_array( 'total_opens', $values['total_opens'] );
-        $this->add_to_array( 'total_unique_clicks', $values['unique_clicks'] );
-        $this->add_to_array( 'total_clicks', $values['total_clicks'] );
+        $this->add_to_array( 'times_forwarded', $values['times_forwarded'] );
+        $this->add_to_array( 'unique_opens', $values['unique_opens'] );
+        $this->add_to_array( 'opens', $values['opens'] );
+        $this->add_to_array( 'unique_clicks', $values['unique_clicks'] );
+        $this->add_to_array( 'clicks', $values['clicks'] );
         $this->add_to_array( 'total_unsubscribes', $values['unsubscribes'] );
         $this->add_to_array( 'total_abuse_compliants', $values['abuse_complaints'] );
-        $this->add_to_array( 'total_trash_spam', $values['total_trash_spam'] );
+        $this->add_to_array( 'trash_spam', $values['trash_spam'] );
 
         $this->add_to_array(
-            'avg_bounce_rate',
+            'bounce_rate',
             $this->get_average( array(
                 $values['bounce_rate'],
-                $this->array['summary']['avg_bounce_rate']
+                $this->array['summary']['bounce_rate']
             )), false
         );
 
         $this->add_to_array(
-            'avg_trash_spam_rate',
+            'trash_spam_rate',
             $this->get_average( array(
                 $values['trash_spam_rate'],
-                $this->array['summary']['avg_trash_spam_rate']
+                $this->array['summary']['trash_spam_rate']
             )), false
         );
 
         $this->add_to_array(
-            'avg_abuse_complaint_rate',
+            'abuse_complaint_rate',
             $this->get_average( array(
                 $values['abuse_complaint_rate'],
-                $this->array['summary']['avg_abuse_complaint_rate']
+                $this->array['summary']['abuse_complaint_rate']
             )), false
         );
 
         $this->add_to_array(
-          'avg_unique_open_rate',
+          'unique_open_rate',
           $this->get_average( array(
               $values['open_rate'],
-              $this->array['summary']['avg_unique_open_rate']
+              $this->array['summary']['unique_open_rate']
           )), false
         );
 
         $this->add_to_array(
-            'avg_unique_click_rate',
+            'unique_click_rate',
             $this->get_average( array(
                 $values['click_rate'],
-                $this->array['summary']['avg_unique_click_rate'] ) ), false );
-        $this->add_to_array( 'avg_unsubscribe_rate', $this->get_average( array( $values['unsubscribe_rate'], $this->array['summary']['avg_unsubscribe_rate'] ) ), false );
+                $this->array['summary']['unique_click_rate'] ) ), false );
+
+        $this->add_to_array( 'unsubscribe_rate', $this->get_average( array(
+            $values['unsubscribe_rate'],
+            $this->array['summary']['unsubscribe_rate'] ) ), false );
 
         if ( $group === 'by_campaign' ) {
           $this->add_to_array( 'title', $values['title'], false );
@@ -637,43 +640,42 @@ class MailChimp_Campaign_CSV_Parser
         // Create the array
         $this->array = array(
             'summary'    => array(
-                'total_campaigns'                       => 0,
-                'total_recipients'                      => 0,
-                'total_successful_deliveries'           => 0,
-                'total_soft_bounces'                    => 0,
-                'total_hard_bounces'                    => 0,
-                'total_bounces'                         => 0,
-                'total_times_forwarded'                 => 0,
-                'total_forwarded_opens'                 => 0,
-                'total_unique_opens'                    => 0,
-                'unique_opens'                          => 0,
-                'total_unique_clicks'                   => 0,
-                'total_clicks'                          => 0,
-                'unsubscribes'                          => 0,
-                'total_trash_spam'                      => 0,
+                'abuse_complaint_rate'                  => 0,
                 'abuse_complaints'                      => 0,
-                'avg_unique_open_rate'                  => 0,
-                'avg_bounce_rate'                       => 0,
-                'avg_trash_spam_rate'                   => 0,
-                'avg_unsubscribe_rate'                  => 0,
-                'avg_unique_click_rate'                 => 0,
-                'avg_abuse_complaint_rate'              => 0,
-                'industry'                              => $this->config['industry'],
-                'start_date'                            => false,
+                'bounce_rate'                           => 0,
+                'campaigns'                             => 0,
+                'clicks'                                => 0,
                 'end_date'                              => false,
+                'forwarded_opens'                       => 0,
+                'hard_bounces'                          => 0,
+                'highest_abuse_complaint_rate'          => array(),
+                'highest_click_rate'                    => array(),
+                'highest_open_rate'                     => array(),
                 'industry'                              => $this->industry[ $this->config['industry'] ],
-                'highest_campaign_open_rate'            => array(),
-                'lowest_campaign_open_rate'             => array(),
-                'highest_campaign_click_rate'           => array(),
-                'lowest_campaign_click_rate'            => array(),
-                'highest_campaign_abuse_complaint_rate' => array(),
-                'lowest_campaign_abuse_complaint_rate'  => array(),
-                //'raw'                         => $raw,
+                'lowest_abuse_complaint_rate'           => array(),
+                'lowest_click_rate'                     => array(),
+                'lowest_open_rate'                      => array(),
+                'opens'                                 => 0,
+                'recipients'                            => 0,
+                'soft_bounces'                          => 0,
+                'start_date'                            => false,
+                'successful_deliveries'                 => 0,
+                'times_forwarded'                       => 0,
+                'total_bounces'                         => 0,
+                'trash_spam'                            => 0,
+                'trash_spam_rate'                       => 0,
+                'unique_click_rate'                     => 0,
+                'unique_clicks'                         => 0,
+                'unique_open_rate'                      => 0,
+                'unique_opens'                          => 0,
+                'unsubscribe_rate'                      => 0,
+                'unsubscribes'                          => 0,
+                //'raw'                                   => $raw,
             ),
             'by_date'     => array(),
-            'by_weekday'  => array(),
-            'by_subject'  => array(),
             'by_campaign' => array(),
+            'by_subject'  => array(),
+            'by_weekday'  => array(),
         );
 
         // Build the array
@@ -694,7 +696,7 @@ class MailChimp_Campaign_CSV_Parser
               'date'                  => date( 'Y-m-d', strtotime( $ary[3] ) ),
               'date_timestamp'        => strtotime( date( 'Y-m-d', strtotime( $ary[3] ) ) ),
               'weekday'               => $ary[4],
-              'total_recipients'      => $ary[5],
+              'recipients'            => $ary[5],
               'successful_deliveries' => $ary[6],
               'soft_bounces'          => $ary[7],
               'hard_bounces'          => $ary[8],
@@ -703,14 +705,14 @@ class MailChimp_Campaign_CSV_Parser
               'forwarded_opens'       => $ary[11],
               'unique_opens'          => $ary[12],
               'open_rate'             => str_replace( "%", "", $ary[13] ),
-              'total_opens'           => $ary[14],
+              'opens'                 => $ary[14],
               'unique_clicks'         => $ary[15],
               'click_rate'            => str_replace( "%", "", $ary[16] ),
-              'total_clicks'          => $ary[17],
+              'clicks'                => $ary[17],
               'unsubscribes'          => $ary[18],
               'abuse_complaints'      => $ary[19],
               'unique_id'             => $ary[22],
-              'total_trash_spam'      => $ary[5] - $ary[9] - $ary[14],
+              'trash_spam'            => $ary[5] - $ary[9] - $ary[14],
               'bounce_rate'           => $this->get_percent( $ary[5], $ary[9] ),
               'trash_spam_rate'       => $this->get_percent( $ary[5], ( $ary[5] - $ary[9] - $ary[14] ) ),
               'unsubscribe_rate'      => $this->get_percent( $ary[5], $ary[18] ),
@@ -718,46 +720,50 @@ class MailChimp_Campaign_CSV_Parser
           );
 
           // Summary
-          $this->array['summary']['total_campaigns']++;
-          $this->array['summary']['total_recipients']            += $values['total_recipients'];
-          $this->array['summary']['total_successful_deliveries'] += $values['successful_deliveries'];
-          $this->array['summary']['total_soft_bounces']          += $values['soft_bounces'];
-          $this->array['summary']['total_unique_clicks']         += $values['unique_clicks'];
-          $this->array['summary']['total_trash_spam']            += $values['total_trash_spam'];
-          $this->array['summary']['total_bounces']               += $values['total_bounces'];
-          $this->array['summary']['unique_opens']                += $values['unique_opens'];
-          $this->array['summary']['unsubscribes']                += $values['unsubscribes'];
-          $this->array['summary']['abuse_complaints']            += $values['abuse_complaints'];
+          $this->array['summary']['campaigns']++;
+          $this->array['summary']['clicks']                += $values['clicks'];
+          $this->array['summary']['recipients']            += $values['recipients'];
+          $this->array['summary']['successful_deliveries'] += $values['successful_deliveries'];
+          $this->array['summary']['soft_bounces']          += $values['soft_bounces'];
+          $this->array['summary']['unique_clicks']         += $values['unique_clicks'];
+          $this->array['summary']['trash_spam']            += $values['trash_spam'];
+          $this->array['summary']['total_bounces']         += $values['total_bounces'];
+          $this->array['summary']['opens']                 += $values['opens'];
+          $this->array['summary']['unique_opens']          += $values['unique_opens'];
+          $this->array['summary']['unsubscribes']          += $values['unsubscribes'];
+          $this->array['summary']['abuse_complaints']      += $values['abuse_complaints'];
+          $this->array['summary']['forwarded_opens']       += $values['forwarded_opens'];
+          $this->array['summary']['hard_bounces']          += $values['hard_bounces'];
 
           // Average bounce rate
-          $this->array['summary']['avg_bounce_rate'] = ( ! $this->array['summary']['avg_bounce_rate'] ) ?
-                                                 $this->get_average( array( $values['bounce_rate'], $this->array['summary']['avg_bounce_rate'] ) ) :
-                                                 $this->array['summary']['avg_bounce_rate'];
+          $this->array['summary']['bounce_rate'] = ( ! $this->array['summary']['bounce_rate'] ) ?
+                                                   $this->get_average( array( $values['bounce_rate'], $this->array['summary']['bounce_rate'] ) ) :
+                                                   $this->array['summary']['bounce_rate'];
 
           // Average trash/spam rate
-          $this->array['summary']['avg_trash_spam_rate'] = ( ! $this->array['summary']['avg_trash_spam_rate'] ) ?
-                                                     $this->get_average( array( $values['trash_spam_rate'], $this->array['summary']['avg_trash_spam_rate'] ) ) :
-                                                     $this->array['summary']['avg_trash_spam_rate'];
+          $this->array['summary']['trash_spam_rate'] = ( ! $this->array['summary']['trash_spam_rate'] ) ?
+                                                       $this->get_average( array( $values['trash_spam_rate'], $this->array['summary']['trash_spam_rate'] ) ) :
+                                                       $this->array['summary']['trash_spam_rate'];
 
           // Average abuse complaint rate
-          $this->array['summary']['avg_abuse_complaint_rate'] = ( ! $this->array['summary']['avg_abuse_complaint_rate'] ) ?
-                                                          $this->get_average( array( $values['abuse_complaint_rate'], $this->array['summary']['avg_abuse_complaint_rate'] ) ) :
-                                                          $this->array['summary']['avg_abuse_complaint_rate'];
+          $this->array['summary']['abuse_complaint_rate'] = ( ! $this->array['summary']['abuse_complaint_rate'] ) ?
+                                                            $this->get_average( array( $values['abuse_complaint_rate'], $this->array['summary']['abuse_complaint_rate'] ) ) :
+                                                            $this->array['summary']['abuse_complaint_rate'];
 
           // Average unique open rate
-          $this->array['summary']['avg_unique_open_rate'] = ( ! $this->array['summary']['avg_unique_open_rate'] ) ?
-                                                      $this->get_average( array( $values['open_rate'], $this->array['summary']['avg_unique_open_rate'] ) ) :
-                                                      $this->array['summary']['avg_unique_open_rate'];
+          $this->array['summary']['unique_open_rate'] = ( ! $this->array['summary']['unique_open_rate'] ) ?
+                                                        $this->get_average( array( $values['open_rate'], $this->array['summary']['unique_open_rate'] ) ) :
+                                                        $this->array['summary']['unique_open_rate'];
 
           // Average unique click rate
-          $this->array['summary']['avg_unique_click_rate'] = ( ! $this->array['summary']['avg_unique_click_rate'] ) ?
-                                                       $this->get_average( array( $values['click_rate'], $this->array['summary']['avg_unique_click_rate'] ) ) :
-                                                       $this->array['summary']['avg_unique_click_rate'];
+          $this->array['summary']['unique_click_rate'] = ( ! $this->array['summary']['unique_click_rate'] ) ?
+                                                         $this->get_average( array( $values['click_rate'], $this->array['summary']['unique_click_rate'] ) ) :
+                                                         $this->array['summary']['unique_click_rate'];
 
           // Average unsubscribe rate
-          $this->array['summary']['avg_unsubscribe_rate'] = ( ! $this->array['summary']['avg_unsubscribe_rate'] ) ?
-                                                      $this->get_average( array( $values['unsubscribe_rate'], $this->array['summary']['avg_unsubscribe_rate'] ) ) :
-                                                      $this->array['summary']['avg_unsubscribe_rate'];
+          $this->array['summary']['unsubscribe_rate'] = ( ! $this->array['summary']['unsubscribe_rate'] ) ?
+                                                        $this->get_average( array( $values['unsubscribe_rate'], $this->array['summary']['unsubscribe_rate'] ) ) :
+                                                        $this->array['summary']['unsubscribe_rate'];
 
           // By date
           $this->add_to_group_array( 'by_date', $values['date_timestamp'], $values );
@@ -778,27 +784,27 @@ class MailChimp_Campaign_CSV_Parser
         // Sort array to find highest/lowest campaigns
 
         // Highest/lowest campaign open rate
-        $this->array['by_campaign']                  = $this->sort_array( $this->array['by_campaign'], 'avg_unique_open_rate' );
+        $this->array['by_campaign']                  = $this->sort_array( $this->array['by_campaign'], 'unique_open_rate' );
         $this->array['summary']['highest_open_rate'] = reset ( $this->array['by_campaign'] );
         $this->array['summary']['lowest_open_rate']  = end ( $this->array['by_campaign'] );
 
         // Highest/lowest campaign click rate
-        $this->array['by_campaign']                   = $this->sort_array( $this->array['by_campaign'], 'avg_unique_click_rate' );
+        $this->array['by_campaign']                   = $this->sort_array( $this->array['by_campaign'], 'unique_click_rate' );
         $this->array['summary']['highest_click_rate'] = reset ( $this->array['by_campaign'] );
         $this->array['summary']['lowest_click_rate']  = end ( $this->array['by_campaign'] );
 
         // Highest/lowest abuse complaint rate
-        $this->array['by_campaign']                             = $this->sort_array( $this->array['by_campaign'], 'avg_abuse_complaint_rate' );
+        $this->array['by_campaign']                             = $this->sort_array( $this->array['by_campaign'], 'abuse_complaint_rate' );
         $this->array['summary']['highest_abuse_complaint_rate'] = reset ( $this->array['by_campaign'] );
         $this->array['summary']['lowest_abuse_complaint_rate']  = end ( $this->array['by_campaign'] );
 
         // Highest/lowest unsubscribe rate
-        $this->array['by_campaign']                         = $this->sort_array( $this->array['by_campaign'], 'avg_unsubscribe_rate' );
+        $this->array['by_campaign']                         = $this->sort_array( $this->array['by_campaign'], 'unsubscribe_rate' );
         $this->array['summary']['highest_unsubscribe_rate'] = reset ( $this->array['by_campaign'] );
         $this->array['summary']['lowest_unsubscribe_rate']  = end ( $this->array['by_campaign'] );
 
         // Highest/lowest spam/trash rate
-        $this->array['by_campaign']                         = $this->sort_array( $this->array['by_campaign'], 'avg_trash_spam_rate' );
+        $this->array['by_campaign']                         = $this->sort_array( $this->array['by_campaign'], 'trash_spam_rate' );
         $this->array['summary']['highest_trash_spam_rate']  = reset ( $this->array['by_campaign'] );
         $this->array['summary']['lowest_trash_spam_rate']   = end ( $this->array['by_campaign'] );
 

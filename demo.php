@@ -57,15 +57,17 @@ $MC->config['mailchimp_campaign_export_file'] = 'reports/Nov_11_2014.csv';
  * - Non-Profit
  * - Other
  * - Pharmaceuticals
- * - Photo and Video
- * - Politics
- * - Professional Services
+ * - Public Relations
+ * - Real Estate
+ * - Recruitment and Staffing
  */
 $MC->config['industry'] = $industry;
 
 // Get and parse the first 500 campaigns.
 $MC->parse_campaign_export( $limit );
 $data = $MC->array;
+
+print_r($data);
 ?>
 <!doctype html>
 <html class="no-js" lang="en">
@@ -110,50 +112,50 @@ $data = $MC->array;
   <section>
     <h2>Summary</h2>
     <div class="half">
-      <p>In the past <?php echo number_format( $data['summary']['num_days'], 0 ); ?> days starting <?php echo date( 'D., F j, Y', $data['summary']['start_date'] ); ?>, <?php echo number_format( $data['summary']['total_campaigns'], 0 ); ?> campaigns have been sent totaling <?php echo number_format( $data['summary']['total_recipients'], 0 ); ?> recipients. That's an average of <?php echo number_format( $data['summary']['total_recipients'] / $data['summary']['total_campaigns'], 0 ); ?> emails per campaign and <?php echo number_format( $data['summary']['total_recipients'] / $data['summary']['num_days'], 0 ); ?> recipients per day.</p>
-      <p>On average, <?php echo $data['summary']['avg_bounce_rate']; ?>% emails were bounced back, <?php echo $data['summary']['avg_trash_spam_rate']; ?>% were trashed or marked spam, <?php echo $data['summary']['avg_abuse_complaint_rate']; ?>% reported an abuse complaint and <?php echo $data['summary']['avg_unique_open_rate']; ?>% were opened with <?php echo $data['summary']['avg_unique_click_rate']; ?>% of those resulting in a click.</p>
-      <p>With a total of <?php echo number_format( $data['summary']['total_unique_clicks']); ?> unique clicks, each click (lead) estimated at $<?php echo $MC->config['lead_value']; ?> and an average <?php echo $MC->config['conversion_rate'] * 100; ?>% conversion rate, these campaigns could potentially earn $<?php echo number_format(($data['summary']['total_unique_clicks'] * $MC->config['conversion_rate']) * $MC->config['lead_value'], 2) ?> in sales.</p>
+      <p>In the past <?php echo number_format( $data['summary']['num_days'], 0 ); ?> days starting <?php echo date( 'D., F j, Y', $data['summary']['start_date'] ); ?>, <?php echo number_format( $data['summary']['campaigns'], 0 ); ?> campaigns have been sent totaling <?php echo number_format( $data['summary']['recipients'], 0 ); ?> recipients. That's an average of <?php echo number_format( $data['summary']['recipients'] / $data['summary']['campaigns'], 0 ); ?> emails per campaign and <?php echo number_format( $data['summary']['recipients'] / $data['summary']['num_days'], 0 ); ?> recipients per day.</p>
+      <p>On average, <?php echo $data['summary']['bounce_rate']; ?>% emails were bounced back, <?php echo $data['summary']['trash_spam_rate']; ?>% were trashed or marked spam, <?php echo $data['summary']['abuse_complaint_rate']; ?>% reported an abuse complaint and <?php echo $data['summary']['unique_open_rate']; ?>% were opened with <?php echo $data['summary']['unique_click_rate']; ?>% of those resulting in a click.</p>
+      <p>With a total of <?php echo number_format( $data['summary']['unique_clicks']); ?> unique clicks, each click (lead) estimated at $<?php echo $MC->config['lead_value']; ?> and an average <?php echo $MC->config['conversion_rate'] * 100; ?>% conversion rate, these campaigns could potentially earn $<?php echo number_format(($data['summary']['unique_clicks'] * $MC->config['conversion_rate']) * $MC->config['lead_value'], 2) ?> in sales.</p>
     </div>
     <div class="half">
       <ul>
-        <li>Total Campaigns <div><?php echo number_format( $data['summary']['total_campaigns'], 0 ); ?></div>
-        <li>Total Recipients <div><?php echo number_format( $data['summary']['total_recipients'], 0 ); ?></div>
-        <li>Trash / Spam <div> <?php echo number_format( $data['summary']['total_trash_spam'], 0 ); ?> (<?php echo round( $data['summary']['avg_trash_spam_rate'], 2 ); ?>%)</div>
+        <li>Total Campaigns <div><?php echo number_format( $data['summary']['campaigns'], 0 ); ?></div>
+        <li>Total Recipients <div><?php echo number_format( $data['summary']['recipients'], 0 ); ?></div>
+        <li>Trash / Spam <div> <?php echo number_format( $data['summary']['trash_spam'], 0 ); ?> (<?php echo round( $data['summary']['trash_spam_rate'], 2 ); ?>%)</div>
         <li>
-          <?php if ( $data['summary']['industry']['avg_bounce'] > $data['summary']['avg_bounce_rate'] ): ?>
+          <?php if ( $data['summary']['industry']['avg_bounce'] > $data['summary']['bounce_rate'] ): ?>
             <div class="ball bg-2"></div>
           <?php else: ?>
             <div class="ball bg-4"></div>
           <?php endif; ?>
-          Bounces <div> <?php echo number_format( $data['summary']['total_bounces'], 0 ); ?> (<?php echo $data['summary']['avg_bounce_rate']; ?>%)</div>
+          Bounces <div> <?php echo number_format( $data['summary']['total_bounces'], 0 ); ?> (<?php echo $data['summary']['bounce_rate']; ?>%)</div>
         <li>
-          <?php if ( $data['summary']['industry']['open'] < $data['summary']['avg_unique_open_rate'] ): ?>
+          <?php if ( $data['summary']['industry']['open'] < $data['summary']['unique_open_rate'] ): ?>
             <div class="ball bg-2"></div>
           <?php else: ?>
             <div class="ball bg-4"></div>
           <?php endif; ?>
-          Unique Opens <div><?php echo number_format( $data['summary']['unique_opens'], 0 ); ?> (<?php if ( $data['summary']['industry']['open'] > $data['summary']['avg_unique_open_rate'] ): ?><span class="color-4"><?php endif; ?><?php echo $data['summary']['avg_unique_open_rate']; ?>%<?php if ( $data['summary']['industry']['open'] > $data['summary']['avg_unique_open_rate'] ): ?></span><?php endif; ?>)</div>
+          Unique Opens <div><?php echo number_format( $data['summary']['unique_opens'], 0 ); ?> (<?php if ( $data['summary']['industry']['open'] > $data['summary']['unique_open_rate'] ): ?><span class="color-4"><?php endif; ?><?php echo $data['summary']['unique_open_rate']; ?>%<?php if ( $data['summary']['industry']['open'] > $data['summary']['unique_open_rate'] ): ?></span><?php endif; ?>)</div>
         <li>
-          <?php if ( $data['summary']['industry']['click'] < $data['summary']['avg_unique_click_rate'] ): ?>
+          <?php if ( $data['summary']['industry']['click'] < $data['summary']['unique_click_rate'] ): ?>
             <div class="ball bg-2"></div>
           <?php else: ?>
             <div class="ball bg-4"></div>
           <?php endif; ?>
-          Unique Clicks <div><?php echo number_format( $data['summary']['total_unique_clicks'], 0 ); ?> (<?php if ( $data['summary']['industry']['click'] > $data['summary']['avg_unique_click_rate'] ): ?><span class="color-4"><?php endif; ?><?php echo $data['summary']['avg_unique_click_rate']; ?>%<?php if ( $data['summary']['industry']['click'] > $data['summary']['avg_unique_click_rate'] ): ?></span><?php endif; ?>)</div>
+          Unique Clicks <div><?php echo number_format( $data['summary']['unique_clicks'], 0 ); ?> (<?php if ( $data['summary']['industry']['click'] > $data['summary']['unique_click_rate'] ): ?><span class="color-4"><?php endif; ?><?php echo $data['summary']['unique_click_rate']; ?>%<?php if ( $data['summary']['industry']['click'] > $data['summary']['unique_click_rate'] ): ?></span><?php endif; ?>)</div>
         <li>
-          <?php if ( $data['summary']['industry']['unsub'] > $data['summary']['avg_unsubscribe_rate'] ): ?>
+          <?php if ( $data['summary']['industry']['unsub'] > $data['summary']['unsubscribe_rate'] ): ?>
             <div class="ball bg-2"></div>
           <?php else: ?>
             <div class="ball bg-4"></div>
           <?php endif; ?>
-          Total Unsubscribes <div><?php echo number_format( $data['summary']['unsubscribes'], 0 ); ?> (<?php if ( $data['summary']['industry']['unsub'] < $data['summary']['avg_unsubscribe_rate'] ): ?><span class="color-4"><?php endif; ?><?php echo $data['summary']['avg_unsubscribe_rate']; ?>%<?php if ( $data['summary']['industry']['unsub'] < $data['summary']['avg_unsubscribe_rate'] ): ?></span><?php endif; ?>)</div>
+          Total Unsubscribes <div><?php echo number_format( $data['summary']['unsubscribes'], 0 ); ?> (<?php if ( $data['summary']['industry']['unsub'] < $data['summary']['unsubscribe_rate'] ): ?><span class="color-4"><?php endif; ?><?php echo $data['summary']['unsubscribe_rate']; ?>%<?php if ( $data['summary']['industry']['unsub'] < $data['summary']['unsubscribe_rate'] ): ?></span><?php endif; ?>)</div>
         <li>
-          <?php if ( $data['summary']['industry']['abuse'] > $data['summary']['avg_abuse_complaint_rate'] ): ?>
+          <?php if ( $data['summary']['industry']['abuse'] > $data['summary']['abuse_complaint_rate'] ): ?>
             <div class="ball bg-2"></div>
           <?php else: ?>
             <div class="ball bg-4"></div>
           <?php endif; ?>
-          Total Abuse Compliants <div><?php echo number_format( $data['summary']['abuse_complaints'], 0 ); ?> (<?php if ( $data['summary']['industry']['abuse'] < $data['summary']['avg_abuse_complaint_rate'] ): ?><span class="color-4"><?php endif; ?><?php echo $data['summary']['avg_abuse_complaint_rate']; ?>%<?php if ( $data['summary']['industry']['abuse'] < $data['summary']['avg_abuse_complaint_rate'] ): ?></span><?php endif; ?>)</div>
+          Total Abuse Compliants <div><?php echo number_format( $data['summary']['abuse_complaints'], 0 ); ?> (<?php if ( $data['summary']['industry']['abuse'] < $data['summary']['abuse_complaint_rate'] ): ?><span class="color-4"><?php endif; ?><?php echo $data['summary']['abuse_complaint_rate']; ?>%<?php if ( $data['summary']['industry']['abuse'] < $data['summary']['abuse_complaint_rate'] ): ?></span><?php endif; ?>)</div>
       </ul>
     </div>
   </section>
@@ -161,42 +163,42 @@ $data = $MC->array;
     <div class="third">
       <div class="block bg-1 small height">
         <h4>Best Open Rate</h4>
-        <h5><?php echo $data['summary']['highest_open_rate']['title']; ?> (<?php echo $data['summary']['highest_open_rate']['avg_unique_open_rate']; ?>%)</h5>
+        <h5><?php echo $data['summary']['highest_open_rate']['title']; ?> (<?php echo $data['summary']['highest_open_rate']['unique_open_rate']; ?>%)</h5>
         <p><?php echo $data['summary']['highest_open_rate']['subject']; ?></p>
       </div>
     </div>
     <div class="third">
       <div class="block bg-2 small height">
         <h4>Best Click Rate</h4>
-        <h5><?php echo $data['summary']['highest_click_rate']['title']; ?> (<?php echo $data['summary']['highest_click_rate']['avg_unique_click_rate']; ?>%)</h5>
+        <h5><?php echo $data['summary']['highest_click_rate']['title']; ?> (<?php echo $data['summary']['highest_click_rate']['unique_click_rate']; ?>%)</h5>
         <p><?php echo $data['summary']['highest_click_rate']['subject']; ?></p>
       </div>
     </div>
     <div class="third">
       <div class="block bg-3 small height">
         <h4>Lowest Open Rate</h4>
-        <h5><?php echo $data['summary']['lowest_open_rate']['title']; ?> (<?php echo $data['summary']['lowest_open_rate']['avg_unique_open_rate']; ?>%)</h5>
+        <h5><?php echo $data['summary']['lowest_open_rate']['title']; ?> (<?php echo $data['summary']['lowest_open_rate']['unique_open_rate']; ?>%)</h5>
         <p><?php echo $data['summary']['lowest_open_rate']['subject']; ?></p>
       </div>
     </div>
     <div class="third">
       <div class="block bg-4 small height">
         <h4>Highest Abuse Complaints</h4>
-        <h5><?php echo $data['summary']['highest_abuse_complaint_rate']['title']; ?> (<?php echo $data['summary']['highest_abuse_complaint_rate']['avg_abuse_complaint_rate']; ?>%)</h5>
+        <h5><?php echo $data['summary']['highest_abuse_complaint_rate']['title']; ?> (<?php echo $data['summary']['highest_abuse_complaint_rate']['abuse_complaint_rate']; ?>%)</h5>
         <p><?php echo $data['summary']['highest_abuse_complaint_rate']['subject']; ?></p>
       </div>
     </div>
     <div class="third">
       <div class="block bg-5 small height">
         <h4>Highest Unsubscribe Rate</h4>
-        <h5><?php echo $data['summary']['highest_unsubscribe_rate']['title']; ?> (<?php echo $data['summary']['highest_unsubscribe_rate']['avg_unsubscribe_rate']; ?>%)</h5>
+        <h5><?php echo $data['summary']['highest_unsubscribe_rate']['title']; ?> (<?php echo $data['summary']['highest_unsubscribe_rate']['unsubscribe_rate']; ?>%)</h5>
         <p><?php echo $data['summary']['highest_unsubscribe_rate']['subject']; ?></p>
       </div>
     </div>
     <div class="third">
       <div class="block bg-6 small height">
         <h4>Highest Spam / Trash Rate</h4>
-        <h5><?php echo $data['summary']['highest_trash_spam_rate']['title']; ?> (<?php echo round($data['summary']['highest_trash_spam_rate']['avg_trash_spam_rate'], 2); ?>%)</h5>
+        <h5><?php echo $data['summary']['highest_trash_spam_rate']['title']; ?> (<?php echo round($data['summary']['highest_trash_spam_rate']['trash_spam_rate'], 2); ?>%)</h5>
         <p><?php echo $data['summary']['highest_trash_spam_rate']['subject']; ?></p>
       </div>
     </div>
@@ -206,7 +208,7 @@ $data = $MC->array;
       <h4>Campaign Sales Forecast</h4>
       <p><select id="cf">
         <?php $t = false; foreach( $data['by_campaign'] as $title => $ary ): if ( ! $t ) $t = $title; ?>
-          <option value="<?php echo $title; ?>" data-clicks="<?php echo $ary['total_unique_clicks']; ?>"><?php echo $title; ?></option>
+          <option value="<?php echo $title; ?>" data-clicks="<?php echo $ary['unique_clicks']; ?>"><?php echo $title; ?></option>
         <?php endforeach; ?>
       </select></p>
       <table>
@@ -218,8 +220,8 @@ $data = $MC->array;
         </thead>
         <tbody>
           <tr>
-            <td><span id="uc"><?php echo $data['by_campaign'][ $t ]['total_unique_clicks']; ?></span></td>
-            <td>$<span id="s"><?php echo number_format( $MC->config['lead_value'] * ($data['by_campaign'][ $t ]['total_unique_clicks'] * $MC->config['conversion_rate'] ), 2 ); ?></span></td>
+            <td><span id="uc"><?php echo $data['by_campaign'][ $t ]['unique_clicks']; ?></span></td>
+            <td>$<span id="s"><?php echo number_format( $MC->config['lead_value'] * ($data['by_campaign'][ $t ]['unique_clicks'] * $MC->config['conversion_rate'] ), 2 ); ?></span></td>
           </tr>
         </tbody>
       </table>
@@ -255,16 +257,16 @@ $data = $MC->array;
         <tr>
           <td><strong>Open Rate</strong></td>
           <td class="right"><?php echo $data['summary']['industry']['open'] ?>%</td>
-          <td class="right"><?php echo $data['summary']['avg_unique_open_rate']; ?>%</td>
+          <td class="right"><?php echo $data['summary']['unique_open_rate']; ?>%</td>
           <td class="right">
-            <?php if ( $data['summary']['industry']['open'] < $data['summary']['avg_unique_open_rate'] ): ?>
+            <?php if ( $data['summary']['industry']['open'] < $data['summary']['unique_open_rate'] ): ?>
               <div class="ball bg-2"></div>
             <?php else: ?>
               <div class="ball bg-4"></div>
             <?php endif; ?>
           </td>
           <td class="right <?php
-          $diff = $data['summary']['avg_unique_open_rate'] - $data['summary']['industry']['open'];
+          $diff = $data['summary']['unique_open_rate'] - $data['summary']['industry']['open'];
           if ( $diff > 0 ):
             echo "color-2";
           else:
@@ -275,16 +277,16 @@ $data = $MC->array;
         <tr>
           <td><strong>Click Rate</strong></td>
           <td class="right"><?php echo $data['summary']['industry']['click'] ?>%</td>
-          <td class="right"><?php echo $data['summary']['avg_unique_click_rate']; ?>%</td>
+          <td class="right"><?php echo $data['summary']['unique_click_rate']; ?>%</td>
           <td class="right">
-            <?php if ( $data['summary']['industry']['click'] < $data['summary']['avg_unique_click_rate'] ): ?>
+            <?php if ( $data['summary']['industry']['click'] < $data['summary']['unique_click_rate'] ): ?>
               <div class="ball bg-2"></div>
             <?php else: ?>
               <div class="ball bg-4"></div>
             <?php endif; ?>
           </td>
           <td class="right <?php
-          $diff = $data['summary']['avg_unique_click_rate'] - $data['summary']['industry']['click'];
+          $diff = $data['summary']['unique_click_rate'] - $data['summary']['industry']['click'];
           if ( $diff > 0 ):
             echo "color-2";
           else:
@@ -295,16 +297,16 @@ $data = $MC->array;
         <tr>
           <td><strong>Bounce Rate</strong></td>
           <td class="right"><?php echo $data['summary']['industry']['avg_bounce'] ?>%</td>
-          <td class="right"><?php echo $data['summary']['avg_bounce_rate']; ?>%</td>
+          <td class="right"><?php echo $data['summary']['bounce_rate']; ?>%</td>
           <td class="right">
-            <?php if ( $data['summary']['industry']['avg_bounce'] > $data['summary']['avg_bounce_rate'] ): ?>
+            <?php if ( $data['summary']['industry']['avg_bounce'] > $data['summary']['bounce_rate'] ): ?>
               <div class="ball bg-2"></div>
             <?php else: ?>
               <div class="ball bg-4"></div>
             <?php endif; ?>
           </td>
           <td class="right <?php
-          $diff = $data['summary']['avg_bounce_rate'] - $data['summary']['industry']['avg_bounce'];
+          $diff = $data['summary']['bounce_rate'] - $data['summary']['industry']['avg_bounce'];
           if ( $diff < 0 ):
             echo "color-2";
           else:
@@ -315,16 +317,16 @@ $data = $MC->array;
         <tr>
           <td><strong>Abuse Compliant Rate</strong></td>
           <td class="right"><?php echo $data['summary']['industry']['abuse'] ?>%</td>
-          <td class="right"><?php echo $data['summary']['avg_abuse_complaint_rate']; ?>%</td>
+          <td class="right"><?php echo $data['summary']['abuse_complaint_rate']; ?>%</td>
           <td class="right">
-            <?php if ( $data['summary']['industry']['abuse'] > $data['summary']['avg_abuse_complaint_rate'] ): ?>
+            <?php if ( $data['summary']['industry']['abuse'] > $data['summary']['abuse_complaint_rate'] ): ?>
               <div class="ball bg-2"></div>
             <?php else: ?>
               <div class="ball bg-4"></div>
             <?php endif; ?>
           </td>
           <td class="right <?php
-          $diff = $data['summary']['avg_abuse_complaint_rate'] - $data['summary']['industry']['abuse'];
+          $diff = $data['summary']['abuse_complaint_rate'] - $data['summary']['industry']['abuse'];
           if ( $diff < 0 ):
             echo "color-2";
           else:
@@ -335,16 +337,16 @@ $data = $MC->array;
         <tr>
           <td><strong>Unsubscribe Rate</strong></td>
           <td class="right"><?php echo $data['summary']['industry']['unsub'] ?>%</td>
-          <td class="right"><?php echo $data['summary']['avg_unsubscribe_rate']; ?>%</td>
+          <td class="right"><?php echo $data['summary']['unsubscribe_rate']; ?>%</td>
           <td class="right">
-            <?php if ( $data['summary']['industry']['unsub'] > $data['summary']['avg_unsubscribe_rate'] ): ?>
+            <?php if ( $data['summary']['industry']['unsub'] > $data['summary']['unsubscribe_rate'] ): ?>
               <div class="ball bg-2"></div>
             <?php else: ?>
               <div class="ball bg-4"></div>
             <?php endif; ?>
           </td>
           <td class="right <?php
-          $diff = $data['summary']['avg_unsubscribe_rate'] - $data['summary']['industry']['unsub'];
+          $diff = $data['summary']['unsubscribe_rate'] - $data['summary']['industry']['unsub'];
           if ( $diff < 0 ):
             echo "color-2";
           else:
@@ -383,15 +385,15 @@ $data = $MC->array;
     </div>
     <div class="third third--space">
       <?php
-      $data['by_weekday']            = $MC->sort_array( $data['by_weekday'], 'avg_unique_open_rate' );
+      $data['by_weekday']            = $MC->sort_array( $data['by_weekday'], 'unique_open_rate' );
       $highest_weekday_open_rate_day = key( $data['by_weekday'] );
-      $highest_weekday_open_rate     = $data['by_weekday'][ $highest_weekday_open_rate_day ]['avg_unique_open_rate'];
+      $highest_weekday_open_rate     = $data['by_weekday'][ $highest_weekday_open_rate_day ]['unique_open_rate'];
 
-      $data['by_weekday']            = $MC->sort_array( $data['by_weekday'], 'avg_unique_click_rate' );
+      $data['by_weekday']            = $MC->sort_array( $data['by_weekday'], 'unique_click_rate' );
       $highest_unique_click_rate_day = key( $data['by_weekday'] );
-      $highest_unique_click_rate     = $data['by_weekday'][ $highest_weekday_open_rate_day ]['avg_unique_click_rate'];
+      $highest_unique_click_rate     = $data['by_weekday'][ $highest_weekday_open_rate_day ]['unique_click_rate'];
       ?>
-      <p>Based on the past <?php echo number_format( $data['summary']['total_campaigns'], 0 ); ?> campaigns sent, <?php echo $highest_weekday_open_rate_day; ?> has the highest open rate at <?php echo $highest_weekday_open_rate; ?>% <?php if( $highest_weekday_open_rate == $highest_unique_click_rate_day ): ?> and click rate at <?php echo $data['by_weekday'][ $highest_weekday_open_rate ]['avg_unique_click_rate']; ?>%.<?php else: ?> and <?php echo $highest_unique_click_rate_day; ?> has the highest click rate at <?php echo $data['by_weekday'][ $highest_unique_click_rate_day ]['avg_unique_click_rate']; ?>%.<?php endif; ?></p>
+      <p>Based on the past <?php echo number_format( $data['summary']['campaigns'], 0 ); ?> campaigns sent, <?php echo $highest_weekday_open_rate_day; ?> has the highest open rate at <?php echo $highest_weekday_open_rate; ?>% <?php if( $highest_weekday_open_rate == $highest_unique_click_rate_day ): ?> and click rate at <?php echo $data['by_weekday'][ $highest_weekday_open_rate ]['unique_click_rate']; ?>%.<?php else: ?> and <?php echo $highest_unique_click_rate_day; ?> has the highest click rate at <?php echo $data['by_weekday'][ $highest_unique_click_rate_day ]['unique_click_rate']; ?>%.<?php endif; ?></p>
     </div>
   </section>
   <section>
@@ -399,10 +401,10 @@ $data = $MC->array;
       <h2>Highest Open Rate by Subject</h2>
       <ol>
         <?php
-        $data['by_subject'] = $MC->sort_array( $data['by_subject'], 'avg_unique_open_rate' );
+        $data['by_subject'] = $MC->sort_array( $data['by_subject'], 'unique_open_rate' );
         $cnt = 0;
         foreach( $data['by_subject'] as $subject => $ary ): $cnt++; if ( $cnt > 10 ) break; ?>
-          <li><b><?php echo $subject; ?></b> (<?php echo $ary['avg_unique_open_rate']; ?>%)
+          <li><b><?php echo $subject; ?></b> (<?php echo $ary['unique_open_rate']; ?>%)
         <?php endforeach; ?>
       </ol>
     </div>
@@ -410,10 +412,10 @@ $data = $MC->array;
       <h2>Highest Open Rate by Campaign</h2>
       <ol>
         <?php
-        $data['by_campaign'] = $MC->sort_array( $data['by_campaign'], 'avg_unique_open_rate' );
+        $data['by_campaign'] = $MC->sort_array( $data['by_campaign'], 'unique_open_rate' );
         $cnt = 0;
         foreach( $data['by_campaign'] as $title => $ary ): $cnt++; if ( $cnt > 10 ) break; ?>
-          <li><b><?php echo $title; ?></b> (<?php echo $ary['avg_unique_open_rate']; ?>%)
+          <li><b><?php echo $title; ?></b> (<?php echo $ary['unique_open_rate']; ?>%)
         <?php endforeach; ?>
       </ol>
     </div>
@@ -518,13 +520,13 @@ $( function() {
                 highlightFill: color1_alt,
                 highlightStroke: color1_alt,
                 data: [
-                    <?php if ( isset( $data['by_weekday']['Monday'] ) ) echo $data['by_weekday']['Monday']['avg_unique_open_rate'] . ','; ?>
-                    <?php if ( isset( $data['by_weekday']['Tuesday'] ) ) echo $data['by_weekday']['Tuesday']['avg_unique_open_rate'] . ','; ?>
-                    <?php if ( isset( $data['by_weekday']['Wednesday'] ) ) echo $data['by_weekday']['Wednesday']['avg_unique_open_rate'] . ','; ?>
-                    <?php if ( isset( $data['by_weekday']['Thursday'] ) ) echo $data['by_weekday']['Thursday']['avg_unique_open_rate'] . ','; ?>
-                    <?php if ( isset( $data['by_weekday']['Friday'] ) ) echo $data['by_weekday']['Friday']['avg_unique_open_rate'] . ','; ?>
-                    <?php if ( isset( $data['by_weekday']['Saturday'] ) ) echo $data['by_weekday']['Saturday']['avg_unique_open_rate'] . ','; ?>
-                    <?php if ( isset( $data['by_weekday']['Sunday'] ) ) echo $data['by_weekday']['Sunday']['avg_unique_open_rate'] . ','; ?>
+                    <?php if ( isset( $data['by_weekday']['Monday'] ) ) echo $data['by_weekday']['Monday']['unique_open_rate'] . ','; ?>
+                    <?php if ( isset( $data['by_weekday']['Tuesday'] ) ) echo $data['by_weekday']['Tuesday']['unique_open_rate'] . ','; ?>
+                    <?php if ( isset( $data['by_weekday']['Wednesday'] ) ) echo $data['by_weekday']['Wednesday']['unique_open_rate'] . ','; ?>
+                    <?php if ( isset( $data['by_weekday']['Thursday'] ) ) echo $data['by_weekday']['Thursday']['unique_open_rate'] . ','; ?>
+                    <?php if ( isset( $data['by_weekday']['Friday'] ) ) echo $data['by_weekday']['Friday']['unique_open_rate'] . ','; ?>
+                    <?php if ( isset( $data['by_weekday']['Saturday'] ) ) echo $data['by_weekday']['Saturday']['unique_open_rate'] . ','; ?>
+                    <?php if ( isset( $data['by_weekday']['Sunday'] ) ) echo $data['by_weekday']['Sunday']['unique_open_rate'] . ','; ?>
                 ]
             },
             {
@@ -534,13 +536,13 @@ $( function() {
                 highlightFill: color3_alt,
                 highlightStroke: color3_alt,
                 data: [
-                    <?php if ( isset( $data['by_weekday']['Monday'] ) ) echo $data['by_weekday']['Monday']['avg_unique_click_rate'] . ','; ?>
-                    <?php if ( isset( $data['by_weekday']['Tuesday'] ) ) echo $data['by_weekday']['Tuesday']['avg_unique_click_rate'] . ','; ?>
-                    <?php if ( isset( $data['by_weekday']['Wednesday'] ) ) echo $data['by_weekday']['Wednesday']['avg_unique_click_rate'] . ','; ?>
-                    <?php if ( isset( $data['by_weekday']['Thursday'] ) ) echo $data['by_weekday']['Thursday']['avg_unique_click_rate'] . ','; ?>
-                    <?php if ( isset( $data['by_weekday']['Friday'] ) ) echo $data['by_weekday']['Friday']['avg_unique_click_rate'] . ','; ?>
-                    <?php if ( isset( $data['by_weekday']['Saturday'] ) ) echo $data['by_weekday']['Saturday']['avg_unique_click_rate'] . ','; ?>
-                    <?php if ( isset( $data['by_weekday']['Sunday'] ) ) echo $data['by_weekday']['Sunday']['avg_unique_click_rate'] . ','; ?>
+                    <?php if ( isset( $data['by_weekday']['Monday'] ) ) echo $data['by_weekday']['Monday']['unique_click_rate'] . ','; ?>
+                    <?php if ( isset( $data['by_weekday']['Tuesday'] ) ) echo $data['by_weekday']['Tuesday']['unique_click_rate'] . ','; ?>
+                    <?php if ( isset( $data['by_weekday']['Wednesday'] ) ) echo $data['by_weekday']['Wednesday']['unique_click_rate'] . ','; ?>
+                    <?php if ( isset( $data['by_weekday']['Thursday'] ) ) echo $data['by_weekday']['Thursday']['unique_click_rate'] . ','; ?>
+                    <?php if ( isset( $data['by_weekday']['Friday'] ) ) echo $data['by_weekday']['Friday']['unique_click_rate'] . ','; ?>
+                    <?php if ( isset( $data['by_weekday']['Saturday'] ) ) echo $data['by_weekday']['Saturday']['unique_click_rate'] . ','; ?>
+                    <?php if ( isset( $data['by_weekday']['Sunday'] ) ) echo $data['by_weekday']['Sunday']['unique_click_rate'] . ','; ?>
                 ]
             },
         ]
@@ -565,7 +567,7 @@ $( function() {
                 pointHighlightStroke: color1_alt,
                 data: [
                     <?php foreach( $data['by_date'] as $time => $ary ): ?>
-                    <?php echo $ary['total_recipients']; ?>,
+                    <?php echo $ary['recipients']; ?>,
                     <?php endforeach; ?>
                 ]
             },
@@ -579,7 +581,7 @@ $( function() {
                 pointHighlightStroke: color3_alt,
                 data: [
                     <?php foreach( $data['by_date'] as $time => $ary ): ?>
-                    <?php echo $ary['total_unique_opens']; ?>,
+                    <?php echo $ary['unique_opens']; ?>,
                     <?php endforeach; ?>
                 ]
             },
@@ -593,7 +595,7 @@ $( function() {
                 pointHighlightStroke: color4_alt,
                 data: [
                     <?php foreach( $data['by_date'] as $time => $ary ): ?>
-                    <?php echo $ary['total_trash_spam']; ?>,
+                    <?php echo $ary['trash_spam']; ?>,
                     <?php endforeach; ?>
                 ]
             }
