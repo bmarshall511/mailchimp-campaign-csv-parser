@@ -1,8 +1,4 @@
 <?php
-
-// Up the memory limit in order to load large CSV files.
-ini_set( 'memory_limit', '999M' );
-
 /**
  * Include the SimpleExcel library to parse CSV files.
  */
@@ -18,7 +14,7 @@ require_once( APP_ROOT . '/lib/SimpleExcel/SimpleExcel.php' );
  * @author Ben Marshall <me@benmarshall.me>
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPL2
  * @version Release: 1.0.0
- * @link http://www.benmarshall.me/mailchimp-report-generator
+ * @link http://www.benmarshall.me/mailchimp-campaign-csv-parser-php-library/
  * @see MailChimp API (http://apidocs.mailchimp.com/api/2.0/)
  * @since Class available since Release 1.0.0
  */
@@ -57,7 +53,7 @@ class MailChimp_Campaign_CSV_Parser
      * @see http://mailchimp.com/resources/research/email-marketing-benchmarks/
      */
     var $industry = array(
-        'Agriculture and Food Services'   => array(
+        'Agriculture and Food Services'          => array(
             'open'            => 26.06,
             'click'           => 3.94,
             'soft_bounce'     => 1.0,
@@ -66,7 +62,7 @@ class MailChimp_Campaign_CSV_Parser
             'abuse'           => 0.04,
             'unsub'           => 0.29
         ),
-        'Architecture and Construction'   => array(
+        'Architecture and Construction'          => array(
             'open'            => 25.38,
             'click'           => 3.86,
             'soft_bounce'     => 2.32,
@@ -75,7 +71,7 @@ class MailChimp_Campaign_CSV_Parser
             'abuse'           => 0.04,
             'unsub'           => 0.35
         ),
-        'Arts and Artists'                => array(
+        'Arts and Artists'                       => array(
             'open'            => 27.97,
             'click'           => 3.28,
             'soft_bounce'     => 1.17,
@@ -84,7 +80,7 @@ class MailChimp_Campaign_CSV_Parser
             'abuse'           => 0.04,
             'unsub'           => 0.29
         ),
-        'Beauty and Personal Care'        => array(
+        'Beauty and Personal Care'               => array(
             'open'            => 20.72,
             'click'           => 2.82,
             'soft_bounce'     => 0.82,
@@ -93,7 +89,7 @@ class MailChimp_Campaign_CSV_Parser
             'abuse'           => 0.06,
             'unsub'           => 0.35
         ),
-        'Business and Finance'            => array(
+        'Business and Finance'                   => array(
             'open'            => 20.68,
             'click'           => 3.14,
             'soft_bounce'     => 1.18,
@@ -102,7 +98,7 @@ class MailChimp_Campaign_CSV_Parser
             'abuse'           => 0.04,
             'unsub'           => 0.24
         ),
-        'Computers and Electronics'       => array(
+        'Computers and Electronics'              => array(
             'open'            => 24.65,
             'click'           => 2.83,
             'soft_bounce'     => 1.75,
@@ -111,7 +107,7 @@ class MailChimp_Campaign_CSV_Parser
             'abuse'           => 0.04,
             'unsub'           => 0.31
         ),
-        'Construction'                    => array(
+        'Construction'                           => array(
             'open'            => 22.67,
             'click'           => 2.40,
             'soft_bounce'     => 2.82,
@@ -120,7 +116,7 @@ class MailChimp_Campaign_CSV_Parser
             'abuse'           => 0.06,
             'unsub'           => 0.48
         ),
-        'Consulting'                      => array(
+        'Consulting'                             => array(
             'open'            => 18.78,
             'click'           => 2.57,
             'soft_bounce'     => 1.76,
@@ -129,7 +125,7 @@ class MailChimp_Campaign_CSV_Parser
             'abuse'           => 0.04,
             'unsub'           => 0.29
         ),
-        'Creative Services/Agency'        => array(
+        'Creative Services/Agency'               => array(
             'open'            => 23.65,
             'click'           => 3.36,
             'soft_bounce'     => 1.89,
@@ -138,7 +134,7 @@ class MailChimp_Campaign_CSV_Parser
             'abuse'           => 0.04,
             'unsub'           => 0.37
         ),
-        'Daily Deals/E-Coupons'           => array(
+        'Daily Deals/E-Coupons'                  => array(
             'open'            => 13.2,
             'click'           => 1.88,
             'soft_bounce'     => 0.17,
@@ -147,7 +143,7 @@ class MailChimp_Campaign_CSV_Parser
             'abuse'           => 0.02,
             'unsub'           => 0.09
         ),
-        'eCommerce'                       => array(
+        'eCommerce'                              => array(
             'open'            => 17.35,
             'click'           => 3.0,
             'soft_bounce'     => 0.48,
@@ -156,7 +152,7 @@ class MailChimp_Campaign_CSV_Parser
             'abuse'           => 0.04,
             'unsub'           => 0.02
         ),
-        'Education and Training'          => array(
+        'Education and Training'                 => array(
             'open'            => 22.49,
             'click'           => 3.42,
             'soft_bounce'     => 1.04,
@@ -165,7 +161,7 @@ class MailChimp_Campaign_CSV_Parser
             'abuse'           => 0.03,
             'unsub'           => 0.21
         ),
-        'Entertainment and Events'        => array(
+        'Entertainment and Events'               => array(
             'open'            => 20.93,
             'click'           => 2.51,
             'soft_bounce'     => 0.88,
@@ -174,7 +170,7 @@ class MailChimp_Campaign_CSV_Parser
             'abuse'           => 0.04,
             'unsub'           => 0.27
         ),
-        'Gambling'                        => array(
+        'Gambling'                               => array(
             'open'            => 18.72,
             'click'           => 2.04,
             'soft_bounce'     => 1.02,
@@ -183,7 +179,7 @@ class MailChimp_Campaign_CSV_Parser
             'abuse'           => 0.06,
             'unsub'           => 0.2
         ),
-        'Games'                           => array(
+        'Games'                                  => array(
             'open'            => 20.31,
             'click'           => 4.07,
             'soft_bounce'     => 0.87,
@@ -192,7 +188,7 @@ class MailChimp_Campaign_CSV_Parser
             'abuse'           => 0.06,
             'unsub'           => 0.24
         ),
-        'Government'                      => array(
+        'Government'                             => array(
             'open'            => 25.69,
             'click'           => 3.64,
             'soft_bounce'     => 0.83,
@@ -201,7 +197,7 @@ class MailChimp_Campaign_CSV_Parser
             'abuse'           => 0.03,
             'unsub'           => 0.14
         ),
-        'Health and Fitness'              => array(
+        'Health and Fitness'                     => array(
             'open'            => 24.27,
             'click'           => 3.64,
             'soft_bounce'     => 0.83,
@@ -210,7 +206,7 @@ class MailChimp_Campaign_CSV_Parser
             'abuse'           => 0.03,
             'unsub'           => 0.14
         ),
-        'Hobbies'                         => array(
+        'Hobbies'                                => array(
             'open'            => 30.71,
             'click'           => 6.65,
             'soft_bounce'     => 0.56,
@@ -219,7 +215,7 @@ class MailChimp_Campaign_CSV_Parser
             'abuse'           => 0.04,
             'unsub'           => 0.22
         ),
-        'Home and Garden'                 => array(
+        'Home and Garden'                        => array(
             'open'            => 26.44,
             'click'           => 4.40,
             'soft_bounce'     => 1.04,
@@ -228,7 +224,7 @@ class MailChimp_Campaign_CSV_Parser
             'abuse'           => 0.06,
             'unsub'           => 0.39
         ),
-        'Insurance'                       => array(
+        'Insurance'                              => array(
             'open'            => 19.71,
             'click'           => 2.37,
             'soft_bounce'     => 1.15,
@@ -237,7 +233,7 @@ class MailChimp_Campaign_CSV_Parser
             'abuse'           => 0.04,
             'unsub'           => 0.21
         ),
-        'Legal'                           => array(
+        'Legal'                                  => array(
             'open'            => 21.23,
             'click'           => 3.25,
             'soft_bounce'     => 1.11,
@@ -246,7 +242,7 @@ class MailChimp_Campaign_CSV_Parser
             'abuse'           => 0.03,
             'unsub'           => 0.19
         ),
-        'Manufacturing'                   => array(
+        'Manufacturing'                          => array(
             'open'            => 23.78,
             'click'           => 3.14,
             'soft_bounce'     => 2.48,
@@ -255,7 +251,7 @@ class MailChimp_Campaign_CSV_Parser
             'abuse'           => 0.05,
             'unsub'           => 0.39
         ),
-        'Marketing and Advertising'       => array(
+        'Marketing and Advertising'              => array(
             'open'            => 18.81,
             'click'           => 2.44,
             'soft_bounce'     => 1.3,
@@ -264,7 +260,7 @@ class MailChimp_Campaign_CSV_Parser
             'abuse'           => 0.04,
             'unsub'           => 0.29
         ),
-        'Media and Publishing'            => array(
+        'Media and Publishing'                   => array(
             'open'            => 22.93,
             'click'           => 5.14,
             'soft_bounce'     => 0.47,
@@ -273,7 +269,7 @@ class MailChimp_Campaign_CSV_Parser
             'abuse'           => 0.02,
             'unsub'           => 0.12
         ),
-        'Medical, Dental, and Healthcare' => array(
+        'Medical, Dental, and Healthcare'        => array(
             'open'            => 22.76,
             'click'           => 3.07,
             'soft_bounce'     => 1.25,
@@ -282,7 +278,7 @@ class MailChimp_Campaign_CSV_Parser
             'abuse'           => 0.06,
             'unsub'           => 0.29
         ),
-        'Mobile'                          => array(
+        'Mobile'                                 => array(
             'open'            => 23.32,
             'click'           => 3.16,
             'soft_bounce'     => 1.23,
@@ -291,7 +287,7 @@ class MailChimp_Campaign_CSV_Parser
             'abuse'           => 0.05,
             'unsub'           => 0.42
         ),
-        'Music and Musicians'             => array(
+        'Music and Musicians'                    => array(
             'open'            => 22.49,
             'click'           => 3.03,
             'soft_bounce'     => 1.08,
@@ -300,7 +296,7 @@ class MailChimp_Campaign_CSV_Parser
             'abuse'           => 0.04,
             'unsub'           => 0.31
         ),
-        'Non-Profit'                      => array(
+        'Non-Profit'                             => array(
             'open'            => 25.12,
             'click'           => 3.25,
             'soft_bounce'     => 0.79,
@@ -309,7 +305,7 @@ class MailChimp_Campaign_CSV_Parser
             'abuse'           => 0.03,
             'unsub'           => 0.19
         ),
-        'Other'                           => array(
+        'Other'                                  => array(
             'open'            => 22.58,
             'click'           => 3.18,
             'soft_bounce'     => 1.37,
@@ -318,7 +314,7 @@ class MailChimp_Campaign_CSV_Parser
             'abuse'           => 0.04,
             'unsub'           => 0.28
         ),
-        'Pharmaceuticals'                 => array(
+        'Pharmaceuticals'                        => array(
             'open'            => 17.79,
             'click'           => 2.62,
             'soft_bounce'     => 1.27,
@@ -327,7 +323,7 @@ class MailChimp_Campaign_CSV_Parser
             'abuse'           => 0.04,
             'unsub'           => 0.24
         ),
-        'Photo and Video'                 => array(
+        'Photo and Video'                        => array(
             'open'            => 27.03,
             'click'           => 4.28,
             'soft_bounce'     => 1.25,
@@ -336,7 +332,7 @@ class MailChimp_Campaign_CSV_Parser
             'abuse'           => 0.05,
             'unsub'           => 0.41
         ),
-        'Politics'                        => array(
+        'Politics'                               => array(
             'open'            => 22.6,
             'click'           => 2.74,
             'soft_bounce'     => 0.79,
@@ -345,7 +341,7 @@ class MailChimp_Campaign_CSV_Parser
             'abuse'           => 0.05,
             'unsub'           => 0.23
         ),
-        'Professional Services'           => array(
+        'Professional Services'                  => array(
             'open'            => 21.72,
             'click'           => 3.21,
             'soft_bounce'     => 1.69,
@@ -354,7 +350,7 @@ class MailChimp_Campaign_CSV_Parser
             'abuse'           => 0.04,
             'unsub'           => 0.34
         ),
-        'Public Relations'                 => array(
+        'Public Relations'                        => array(
             'open'            => 19.98,
             'click'           => 2.15,
             'soft_bounce'     => 1.26,
@@ -363,7 +359,7 @@ class MailChimp_Campaign_CSV_Parser
             'abuse'           => 0.03,
             'unsub'           => 0.25
         ),
-        'Real Estate'                     => array(
+        'Real Estate'                            => array(
             'open'            => 22.12,
             'click'           => 2.68,
             'soft_bounce'     => 1.29,
@@ -372,7 +368,7 @@ class MailChimp_Campaign_CSV_Parser
             'abuse'           => 0.07,
             'unsub'           => 0.34
         ),
-        'Recruitment and Staffing'        => array(
+        'Recruitment and Staffing'               => array(
             'open'            => 20.77,
             'click'           => 3.17,
             'soft_bounce'     => 1.10,
@@ -380,6 +376,96 @@ class MailChimp_Campaign_CSV_Parser
             'avg_bounce'      => 1.17,
             'abuse'           => 0.04,
             'unsub'           => 0.33
+        ),
+        'Religion'                               => array(
+            'open'            => 22.27,
+            'click'           => 3.5,
+            'soft_bounce'     => 0.34,
+            'hard_bounce'     => 0.36,
+            'avg_bounce'      => 0.35,
+            'abuse'           => 0.03,
+            'unsub'           => 0.13
+        ),
+        'Restaurant'                             => array(
+            'open'            => 24.61,
+            'click'           => 1.6,
+            'soft_bounce'     => 0.52,
+            'hard_bounce'     => 0.41,
+            'avg_bounce'      => 0.47,
+            'abuse'           => 0.04,
+            'unsub'           => 0.29
+        ),
+        'Restaurant and Venue'                   => array(
+            'open'            => 22.56,
+            'click'           => 1.58,
+            'soft_bounce'     => 1.02,
+            'hard_bounce'     => 0.92,
+            'avg_bounce'      => 0.97,
+            'abuse'           => 0.04,
+            'unsub'           => 0.38
+        ),
+        'Retail'                                 => array(
+            'open'            => 23.16,
+            'click'           => 3.26,
+            'soft_bounce'     => 0.66,
+            'hard_bounce'     => 0.6,
+            'avg_bounce'      => 0.63,
+            'abuse'           => 0.04,
+            'unsub'           => 0.03
+        ),
+        'Social Networks and Online Communities' => array(
+            'open'            => 21.98,
+            'click'           => 3.89,
+            'soft_bounce'     => 0.64,
+            'hard_bounce'     => 0.62,
+            'avg_bounce'      => 0.63,
+            'abuse'           => 0.03,
+            'unsub'           => 0.24
+        ),
+        'Software and Web App'                   => array(
+            'open'            => 21.86,
+            'click'           => 3.26,
+            'soft_bounce'     => 1.64,
+            'hard_bounce'     => 1.52,
+            'avg_bounce'      => 1.58,
+            'abuse'           => 0.04,
+            'unsub'           => 0.4
+        ),
+        'Sports'                                 => array(
+            'open'            => 26.57,
+            'click'           => 3.91,
+            'soft_bounce'     => 0.92,
+            'hard_bounce'     => 0.87,
+            'avg_bounce'      => 0.9,
+            'abuse'           => 0.04,
+            'unsub'           => 0.28
+        ),
+        'Telecommunications'                     => array(
+            'open'            => 19.77,
+            'click'           => 2.38,
+            'soft_bounce'     => 1.84,
+            'hard_bounce'     => 1.64,
+            'avg_bounce'      => 1.74,
+            'abuse'           => 0.04,
+            'unsub'           => 0.25
+        ),
+        'Travel and Transportation'              => array(
+            'open'            => 20,
+            'click'           => 2.77,
+            'soft_bounce'     => 1.12,
+            'hard_bounce'     => 0.91,
+            'avg_bounce'      => 1.02,
+            'abuse'           => 0.04,
+            'unsub'           => 0.24
+        ),
+        'Vitamin Supplements'                    => array(
+            'open'            => 18.12,
+            'click'           => 2.44,
+            'soft_bounce'     => 0.62,
+            'hard_bounce'     => 0.6,
+            'avg_bounce'      => 0.61,
+            'abuse'           => 0.06,
+            'unsub'           => 0.27
         )
     );
 
@@ -670,7 +756,7 @@ class MailChimp_Campaign_CSV_Parser
                 'unique_opens'                          => 0,
                 'unsubscribe_rate'                      => 0,
                 'unsubscribes'                          => 0,
-                //'raw'                                   => $raw,
+                'raw'                                   => $raw,
             ),
             'by_date'     => array(),
             'by_campaign' => array(),

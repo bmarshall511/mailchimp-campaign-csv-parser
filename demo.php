@@ -1,5 +1,8 @@
 <?php
 
+// Up the memory limit in order to load large CSV files.
+ini_set( 'memory_limit', '999M' );
+
 /**
  * Define the root directory of the app.
  */
@@ -60,6 +63,16 @@ $MC->config['mailchimp_campaign_export_file'] = 'reports/Nov_11_2014.csv';
  * - Public Relations
  * - Real Estate
  * - Recruitment and Staffing
+ * - Religion
+ * - Restaurant
+ * - Restaurant and Venue
+ * - Retail
+ * - Social Networks and Online Communities
+ * - Software and Web App
+ * - Sports
+ * - Telecommunications
+ * - Travel and Transportation
+ * - Vitamin Supplements
  */
 $MC->config['industry'] = $industry;
 
@@ -67,7 +80,7 @@ $MC->config['industry'] = $industry;
 $MC->parse_campaign_export( $limit );
 $data = $MC->array;
 
-print_r($data);
+//print_r($data);
 ?>
 <!doctype html>
 <html class="no-js" lang="en">
