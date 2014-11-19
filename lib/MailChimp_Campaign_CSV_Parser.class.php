@@ -13,7 +13,7 @@ require_once( APP_ROOT . '/lib/SimpleExcel/SimpleExcel.php' );
  *
  * @author Ben Marshall <me@benmarshall.me>
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPL2
- * @version Release: 1.0.0
+ * @version Release: 1.1.0
  * @link http://www.benmarshall.me/mailchimp-campaign-csv-parser-php-library/
  * @see MailChimp API (http://apidocs.mailchimp.com/api/2.0/)
  * @since Class available since Release 1.0.0
@@ -41,6 +41,55 @@ class MailChimp_Campaign_CSV_Parser
         'conversion_rate'                => 0.08,  // The average conversion rate for each lead.
         'mailchimp_campaign_export_file' => false, // Filename of the MailChimp Campaign export file.
         'industry'                       => false, // Industry for the sent campaigns.
+        'company_size'                   => false, // Company size for the sent campaigns.
+    );
+
+    /**
+     * Company size rates info
+     *
+     * Company size rates gathered from MailChimp. Last updated 11/18/2014.
+     *
+     * @var array
+     * @access public
+     * @see http://mailchimp.com/resources/research/email-marketing-benchmarks/
+     */
+    var $company_size = array(
+        '1 to 10'  => array(
+            'open'        => 22.1,
+            'click'       => 3.5,
+            'soft_bounce' => 0.9,
+            'hard_bounce' => 0.8,
+            'avg_bounce'  => 0.85,
+            'abuse'       => 0.04,
+            'unsub'       => 0.26
+        ),
+        '11 to 25' => array(
+            'open'        => 21.1,
+            'click'       => 3.1,
+            'soft_bounce' => 0.8,
+            'hard_bounce' => 0.7,
+            'avg_bounce'  => 0.75,
+            'abuse'       => 0.03,
+            'unsub'       => 0.22
+        ),
+        '26 to 50' => array(
+            'open'        => 21.9,
+            'click'       => 3.6,
+            'soft_bounce' => 0.7,
+            'hard_bounce' => 0.5,
+            'avg_bounce'  => 0.6,
+            'abuse'       => 0.02,
+            'unsub'       => 0.18
+        ),
+        '50+'      => array(
+            'open'        => 23.4,
+            'click'       => 3.5,
+            'soft_bounce' => 0.8,
+            'hard_bounce' => 0.9,
+            'avg_bounce'  => 0.85,
+            'abuse'       => 0.03,
+            'unsub'       => 0.19
+        )
     );
 
     /**
@@ -54,418 +103,418 @@ class MailChimp_Campaign_CSV_Parser
      */
     var $industry = array(
         'Agriculture and Food Services'          => array(
-            'open'            => 26.06,
-            'click'           => 3.94,
-            'soft_bounce'     => 1.0,
-            'hard_bounce'     => 0.86,
-            'avg_bounce'      => 0.93,
-            'abuse'           => 0.04,
-            'unsub'           => 0.29
+            'open'        => 26.06,
+            'click'       => 3.94,
+            'soft_bounce' => 1.0,
+            'hard_bounce' => 0.86,
+            'avg_bounce'  => 0.93,
+            'abuse'       => 0.04,
+            'unsub'       => 0.29
         ),
         'Architecture and Construction'          => array(
-            'open'            => 25.38,
-            'click'           => 3.86,
-            'soft_bounce'     => 2.32,
-            'hard_bounce'     => 1.98,
-            'avg_bounce'      => 2.15,
-            'abuse'           => 0.04,
-            'unsub'           => 0.35
+            'open'        => 25.38,
+            'click'       => 3.86,
+            'soft_bounce' => 2.32,
+            'hard_bounce' => 1.98,
+            'avg_bounce'  => 2.15,
+            'abuse'       => 0.04,
+            'unsub'       => 0.35
         ),
         'Arts and Artists'                       => array(
-            'open'            => 27.97,
-            'click'           => 3.28,
-            'soft_bounce'     => 1.17,
-            'hard_bounce'     => 0.99,
-            'avg_bounce'      => 1.08,
-            'abuse'           => 0.04,
-            'unsub'           => 0.29
+            'open'        => 27.97,
+            'click'       => 3.28,
+            'soft_bounce' => 1.17,
+            'hard_bounce' => 0.99,
+            'avg_bounce'  => 1.08,
+            'abuse'       => 0.04,
+            'unsub'       => 0.29
         ),
         'Beauty and Personal Care'               => array(
-            'open'            => 20.72,
-            'click'           => 2.82,
-            'soft_bounce'     => 0.82,
-            'hard_bounce'     => 0.95,
-            'avg_bounce'      => 0.89,
-            'abuse'           => 0.06,
-            'unsub'           => 0.35
+            'open'        => 20.72,
+            'click'       => 2.82,
+            'soft_bounce' => 0.82,
+            'hard_bounce' => 0.95,
+            'avg_bounce'  => 0.89,
+            'abuse'       => 0.06,
+            'unsub'       => 0.35
         ),
         'Business and Finance'                   => array(
-            'open'            => 20.68,
-            'click'           => 3.14,
-            'soft_bounce'     => 1.18,
-            'hard_bounce'     => 1.09,
-            'avg_bounce'      => 1.14,
-            'abuse'           => 0.04,
-            'unsub'           => 0.24
+            'open'        => 20.68,
+            'click'       => 3.14,
+            'soft_bounce' => 1.18,
+            'hard_bounce' => 1.09,
+            'avg_bounce'  => 1.14,
+            'abuse'       => 0.04,
+            'unsub'       => 0.24
         ),
         'Computers and Electronics'              => array(
-            'open'            => 24.65,
-            'click'           => 2.83,
-            'soft_bounce'     => 1.75,
-            'hard_bounce'     => 1.51,
-            'avg_bounce'      => 3.26,
-            'abuse'           => 0.04,
-            'unsub'           => 0.31
+            'open'        => 24.65,
+            'click'       => 2.83,
+            'soft_bounce' => 1.75,
+            'hard_bounce' => 1.51,
+            'avg_bounce'  => 3.26,
+            'abuse'       => 0.04,
+            'unsub'       => 0.31
         ),
         'Construction'                           => array(
-            'open'            => 22.67,
-            'click'           => 2.40,
-            'soft_bounce'     => 2.82,
-            'hard_bounce'     => 2.62,
-            'avg_bounce'      => 2.72,
-            'abuse'           => 0.06,
-            'unsub'           => 0.48
+            'open'        => 22.67,
+            'click'       => 2.40,
+            'soft_bounce' => 2.82,
+            'hard_bounce' => 2.62,
+            'avg_bounce'  => 2.72,
+            'abuse'       => 0.06,
+            'unsub'       => 0.48
         ),
         'Consulting'                             => array(
-            'open'            => 18.78,
-            'click'           => 2.57,
-            'soft_bounce'     => 1.76,
-            'hard_bounce'     => 1.57,
-            'avg_bounce'      => 1.67,
-            'abuse'           => 0.04,
-            'unsub'           => 0.29
+            'open'        => 18.78,
+            'click'       => 2.57,
+            'soft_bounce' => 1.76,
+            'hard_bounce' => 1.57,
+            'avg_bounce'  => 1.67,
+            'abuse'       => 0.04,
+            'unsub'       => 0.29
         ),
         'Creative Services/Agency'               => array(
-            'open'            => 23.65,
-            'click'           => 3.36,
-            'soft_bounce'     => 1.89,
-            'hard_bounce'     => 1.75,
-            'avg_bounce'      => 1.82,
-            'abuse'           => 0.04,
-            'unsub'           => 0.37
+            'open'        => 23.65,
+            'click'       => 3.36,
+            'soft_bounce' => 1.89,
+            'hard_bounce' => 1.75,
+            'avg_bounce'  => 1.82,
+            'abuse'       => 0.04,
+            'unsub'       => 0.37
         ),
         'Daily Deals/E-Coupons'                  => array(
-            'open'            => 13.2,
-            'click'           => 1.88,
-            'soft_bounce'     => 0.17,
-            'hard_bounce'     => 0.15,
-            'avg_bounce'      => 0.16,
-            'abuse'           => 0.02,
-            'unsub'           => 0.09
+            'open'        => 13.2,
+            'click'       => 1.88,
+            'soft_bounce' => 0.17,
+            'hard_bounce' => 0.15,
+            'avg_bounce'  => 0.16,
+            'abuse'       => 0.02,
+            'unsub'       => 0.09
         ),
         'eCommerce'                              => array(
-            'open'            => 17.35,
-            'click'           => 3.0,
-            'soft_bounce'     => 0.48,
-            'hard_bounce'     => 0.43,
-            'avg_bounce'      => 0.46,
-            'abuse'           => 0.04,
-            'unsub'           => 0.02
+            'open'        => 17.35,
+            'click'       => 3.0,
+            'soft_bounce' => 0.48,
+            'hard_bounce' => 0.43,
+            'avg_bounce'  => 0.46,
+            'abuse'       => 0.04,
+            'unsub'       => 0.02
         ),
         'Education and Training'                 => array(
-            'open'            => 22.49,
-            'click'           => 3.42,
-            'soft_bounce'     => 1.04,
-            'hard_bounce'     => 1.01,
-            'avg_bounce'      => 1.03,
-            'abuse'           => 0.03,
-            'unsub'           => 0.21
+            'open'        => 22.49,
+            'click'       => 3.42,
+            'soft_bounce' => 1.04,
+            'hard_bounce' => 1.01,
+            'avg_bounce'  => 1.03,
+            'abuse'       => 0.03,
+            'unsub'       => 0.21
         ),
         'Entertainment and Events'               => array(
-            'open'            => 20.93,
-            'click'           => 2.51,
-            'soft_bounce'     => 0.88,
-            'hard_bounce'     => 0.85,
-            'avg_bounce'      => 1.73,
-            'abuse'           => 0.04,
-            'unsub'           => 0.27
+            'open'        => 20.93,
+            'click'       => 2.51,
+            'soft_bounce' => 0.88,
+            'hard_bounce' => 0.85,
+            'avg_bounce'  => 1.73,
+            'abuse'       => 0.04,
+            'unsub'       => 0.27
         ),
         'Gambling'                               => array(
-            'open'            => 18.72,
-            'click'           => 2.04,
-            'soft_bounce'     => 1.02,
-            'hard_bounce'     => 1.4,
-            'avg_bounce'      => 2.42,
-            'abuse'           => 0.06,
-            'unsub'           => 0.2
+            'open'        => 18.72,
+            'click'       => 2.04,
+            'soft_bounce' => 1.02,
+            'hard_bounce' => 1.4,
+            'avg_bounce'  => 2.42,
+            'abuse'       => 0.06,
+            'unsub'       => 0.2
         ),
         'Games'                                  => array(
-            'open'            => 20.31,
-            'click'           => 4.07,
-            'soft_bounce'     => 0.87,
-            'hard_bounce'     => 1.27,
-            'avg_bounce'      => 1.07,
-            'abuse'           => 0.06,
-            'unsub'           => 0.24
+            'open'        => 20.31,
+            'click'       => 4.07,
+            'soft_bounce' => 0.87,
+            'hard_bounce' => 1.27,
+            'avg_bounce'  => 1.07,
+            'abuse'       => 0.06,
+            'unsub'       => 0.24
         ),
         'Government'                             => array(
-            'open'            => 25.69,
-            'click'           => 3.64,
-            'soft_bounce'     => 0.83,
-            'hard_bounce'     => 0.74,
-            'avg_bounce'      => 0.79,
-            'abuse'           => 0.03,
-            'unsub'           => 0.14
+            'open'        => 25.69,
+            'click'       => 3.64,
+            'soft_bounce' => 0.83,
+            'hard_bounce' => 0.74,
+            'avg_bounce'  => 0.79,
+            'abuse'       => 0.03,
+            'unsub'       => 0.14
         ),
         'Health and Fitness'                     => array(
-            'open'            => 24.27,
-            'click'           => 3.64,
-            'soft_bounce'     => 0.83,
-            'hard_bounce'     => 0.74,
-            'avg_bounce'      => 0.79,
-            'abuse'           => 0.03,
-            'unsub'           => 0.14
+            'open'        => 24.27,
+            'click'       => 3.64,
+            'soft_bounce' => 0.83,
+            'hard_bounce' => 0.74,
+            'avg_bounce'  => 0.79,
+            'abuse'       => 0.03,
+            'unsub'       => 0.14
         ),
         'Hobbies'                                => array(
-            'open'            => 30.71,
-            'click'           => 6.65,
-            'soft_bounce'     => 0.56,
-            'hard_bounce'     => 0.54,
-            'avg_bounce'      => 0.55,
-            'abuse'           => 0.04,
-            'unsub'           => 0.22
+            'open'        => 30.71,
+            'click'       => 6.65,
+            'soft_bounce' => 0.56,
+            'hard_bounce' => 0.54,
+            'avg_bounce'  => 0.55,
+            'abuse'       => 0.04,
+            'unsub'       => 0.22
         ),
         'Home and Garden'                        => array(
-            'open'            => 26.44,
-            'click'           => 4.40,
-            'soft_bounce'     => 1.04,
-            'hard_bounce'     => 0.82,
-            'avg_bounce'      => 0.93,
-            'abuse'           => 0.06,
-            'unsub'           => 0.39
+            'open'        => 26.44,
+            'click'       => 4.40,
+            'soft_bounce' => 1.04,
+            'hard_bounce' => 0.82,
+            'avg_bounce'  => 0.93,
+            'abuse'       => 0.06,
+            'unsub'       => 0.39
         ),
         'Insurance'                              => array(
-            'open'            => 19.71,
-            'click'           => 2.37,
-            'soft_bounce'     => 1.15,
-            'hard_bounce'     => 1.19,
-            'avg_bounce'      => 1.17,
-            'abuse'           => 0.04,
-            'unsub'           => 0.21
+            'open'        => 19.71,
+            'click'       => 2.37,
+            'soft_bounce' => 1.15,
+            'hard_bounce' => 1.19,
+            'avg_bounce'  => 1.17,
+            'abuse'       => 0.04,
+            'unsub'       => 0.21
         ),
         'Legal'                                  => array(
-            'open'            => 21.23,
-            'click'           => 3.25,
-            'soft_bounce'     => 1.11,
-            'hard_bounce'     => 0.99,
-            'avg_bounce'      => 1.05,
-            'abuse'           => 0.03,
-            'unsub'           => 0.19
+            'open'        => 21.23,
+            'click'       => 3.25,
+            'soft_bounce' => 1.11,
+            'hard_bounce' => 0.99,
+            'avg_bounce'  => 1.05,
+            'abuse'       => 0.03,
+            'unsub'       => 0.19
         ),
         'Manufacturing'                          => array(
-            'open'            => 23.78,
-            'click'           => 3.14,
-            'soft_bounce'     => 2.48,
-            'hard_bounce'     => 1.9,
-            'avg_bounce'      => 2.19,
-            'abuse'           => 0.05,
-            'unsub'           => 0.39
+            'open'        => 23.78,
+            'click'       => 3.14,
+            'soft_bounce' => 2.48,
+            'hard_bounce' => 1.9,
+            'avg_bounce'  => 2.19,
+            'abuse'       => 0.05,
+            'unsub'       => 0.39
         ),
         'Marketing and Advertising'              => array(
-            'open'            => 18.81,
-            'click'           => 2.44,
-            'soft_bounce'     => 1.3,
-            'hard_bounce'     => 1.22,
-            'avg_bounce'      => 1.26,
-            'abuse'           => 0.04,
-            'unsub'           => 0.29
+            'open'        => 18.81,
+            'click'       => 2.44,
+            'soft_bounce' => 1.3,
+            'hard_bounce' => 1.22,
+            'avg_bounce'  => 1.26,
+            'abuse'       => 0.04,
+            'unsub'       => 0.29
         ),
         'Media and Publishing'                   => array(
-            'open'            => 22.93,
-            'click'           => 5.14,
-            'soft_bounce'     => 0.47,
-            'hard_bounce'     => 0.33,
-            'avg_bounce'      => 0.40,
-            'abuse'           => 0.02,
-            'unsub'           => 0.12
+            'open'        => 22.93,
+            'click'       => 5.14,
+            'soft_bounce' => 0.47,
+            'hard_bounce' => 0.33,
+            'avg_bounce'  => 0.40,
+            'abuse'       => 0.02,
+            'unsub'       => 0.12
         ),
         'Medical, Dental, and Healthcare'        => array(
-            'open'            => 22.76,
-            'click'           => 3.07,
-            'soft_bounce'     => 1.25,
-            'hard_bounce'     => 1.37,
-            'avg_bounce'      => 2.62,
-            'abuse'           => 0.06,
-            'unsub'           => 0.29
+            'open'        => 22.76,
+            'click'       => 3.07,
+            'soft_bounce' => 1.25,
+            'hard_bounce' => 1.37,
+            'avg_bounce'  => 2.62,
+            'abuse'       => 0.06,
+            'unsub'       => 0.29
         ),
         'Mobile'                                 => array(
-            'open'            => 23.32,
-            'click'           => 3.16,
-            'soft_bounce'     => 1.23,
-            'hard_bounce'     => 1.38,
-            'avg_bounce'      => 1.92,
-            'abuse'           => 0.05,
-            'unsub'           => 0.42
+            'open'        => 23.32,
+            'click'       => 3.16,
+            'soft_bounce' => 1.23,
+            'hard_bounce' => 1.38,
+            'avg_bounce'  => 1.92,
+            'abuse'       => 0.05,
+            'unsub'       => 0.42
         ),
         'Music and Musicians'                    => array(
-            'open'            => 22.49,
-            'click'           => 3.03,
-            'soft_bounce'     => 1.08,
-            'hard_bounce'     => 0.96,
-            'avg_bounce'      => 1.02,
-            'abuse'           => 0.04,
-            'unsub'           => 0.31
+            'open'        => 22.49,
+            'click'       => 3.03,
+            'soft_bounce' => 1.08,
+            'hard_bounce' => 0.96,
+            'avg_bounce'  => 1.02,
+            'abuse'       => 0.04,
+            'unsub'       => 0.31
         ),
         'Non-Profit'                             => array(
-            'open'            => 25.12,
-            'click'           => 3.25,
-            'soft_bounce'     => 0.79,
-            'hard_bounce'     => 0.71,
-            'avg_bounce'      => 0.75,
-            'abuse'           => 0.03,
-            'unsub'           => 0.19
+            'open'        => 25.12,
+            'click'       => 3.25,
+            'soft_bounce' => 0.79,
+            'hard_bounce' => 0.71,
+            'avg_bounce'  => 0.75,
+            'abuse'       => 0.03,
+            'unsub'       => 0.19
         ),
         'Other'                                  => array(
-            'open'            => 22.58,
-            'click'           => 3.18,
-            'soft_bounce'     => 1.37,
-            'hard_bounce'     => 1.25,
-            'avg_bounce'      => 1.31,
-            'abuse'           => 0.04,
-            'unsub'           => 0.28
+            'open'        => 22.58,
+            'click'       => 3.18,
+            'soft_bounce' => 1.37,
+            'hard_bounce' => 1.25,
+            'avg_bounce'  => 1.31,
+            'abuse'       => 0.04,
+            'unsub'       => 0.28
         ),
         'Pharmaceuticals'                        => array(
-            'open'            => 17.79,
-            'click'           => 2.62,
-            'soft_bounce'     => 1.27,
-            'hard_bounce'     => 1.46,
-            'avg_bounce'      => 1.37,
-            'abuse'           => 0.04,
-            'unsub'           => 0.24
+            'open'        => 17.79,
+            'click'       => 2.62,
+            'soft_bounce' => 1.27,
+            'hard_bounce' => 1.46,
+            'avg_bounce'  => 1.37,
+            'abuse'       => 0.04,
+            'unsub'       => 0.24
         ),
         'Photo and Video'                        => array(
-            'open'            => 27.03,
-            'click'           => 4.28,
-            'soft_bounce'     => 1.25,
-            'hard_bounce'     => 1.22,
-            'avg_bounce'      => 1.24,
-            'abuse'           => 0.05,
-            'unsub'           => 0.41
+            'open'        => 27.03,
+            'click'       => 4.28,
+            'soft_bounce' => 1.25,
+            'hard_bounce' => 1.22,
+            'avg_bounce'  => 1.24,
+            'abuse'       => 0.05,
+            'unsub'       => 0.41
         ),
         'Politics'                               => array(
-            'open'            => 22.6,
-            'click'           => 2.74,
-            'soft_bounce'     => 0.79,
-            'hard_bounce'     => 0.78,
-            'avg_bounce'      => 0.79,
-            'abuse'           => 0.05,
-            'unsub'           => 0.23
+            'open'        => 22.6,
+            'click'       => 2.74,
+            'soft_bounce' => 0.79,
+            'hard_bounce' => 0.78,
+            'avg_bounce'  => 0.79,
+            'abuse'       => 0.05,
+            'unsub'       => 0.23
         ),
         'Professional Services'                  => array(
-            'open'            => 21.72,
-            'click'           => 3.21,
-            'soft_bounce'     => 1.69,
-            'hard_bounce'     => 1.51,
-            'avg_bounce'      => 1.6,
-            'abuse'           => 0.04,
-            'unsub'           => 0.34
+            'open'        => 21.72,
+            'click'       => 3.21,
+            'soft_bounce' => 1.69,
+            'hard_bounce' => 1.51,
+            'avg_bounce'  => 1.6,
+            'abuse'       => 0.04,
+            'unsub'       => 0.34
         ),
         'Public Relations'                        => array(
-            'open'            => 19.98,
-            'click'           => 2.15,
-            'soft_bounce'     => 1.26,
-            'hard_bounce'     => 1.20,
-            'avg_bounce'      => 1.23,
-            'abuse'           => 0.03,
-            'unsub'           => 0.25
+            'open'        => 19.98,
+            'click'       => 2.15,
+            'soft_bounce' => 1.26,
+            'hard_bounce' => 1.20,
+            'avg_bounce'  => 1.23,
+            'abuse'       => 0.03,
+            'unsub'       => 0.25
         ),
         'Real Estate'                            => array(
-            'open'            => 22.12,
-            'click'           => 2.68,
-            'soft_bounce'     => 1.29,
-            'hard_bounce'     => 1.33,
-            'avg_bounce'      => 1.31,
-            'abuse'           => 0.07,
-            'unsub'           => 0.34
+            'open'        => 22.12,
+            'click'       => 2.68,
+            'soft_bounce' => 1.29,
+            'hard_bounce' => 1.33,
+            'avg_bounce'  => 1.31,
+            'abuse'       => 0.07,
+            'unsub'       => 0.34
         ),
         'Recruitment and Staffing'               => array(
-            'open'            => 20.77,
-            'click'           => 3.17,
-            'soft_bounce'     => 1.10,
-            'hard_bounce'     => 1.24,
-            'avg_bounce'      => 1.17,
-            'abuse'           => 0.04,
-            'unsub'           => 0.33
+            'open'        => 20.77,
+            'click'       => 3.17,
+            'soft_bounce' => 1.10,
+            'hard_bounce' => 1.24,
+            'avg_bounce'  => 1.17,
+            'abuse'       => 0.04,
+            'unsub'       => 0.33
         ),
         'Religion'                               => array(
-            'open'            => 22.27,
-            'click'           => 3.5,
-            'soft_bounce'     => 0.34,
-            'hard_bounce'     => 0.36,
-            'avg_bounce'      => 0.35,
-            'abuse'           => 0.03,
-            'unsub'           => 0.13
+            'open'        => 22.27,
+            'click'       => 3.5,
+            'soft_bounce' => 0.34,
+            'hard_bounce' => 0.36,
+            'avg_bounce'  => 0.35,
+            'abuse'       => 0.03,
+            'unsub'       => 0.13
         ),
         'Restaurant'                             => array(
-            'open'            => 24.61,
-            'click'           => 1.6,
-            'soft_bounce'     => 0.52,
-            'hard_bounce'     => 0.41,
-            'avg_bounce'      => 0.47,
-            'abuse'           => 0.04,
-            'unsub'           => 0.29
+            'open'        => 24.61,
+            'click'       => 1.6,
+            'soft_bounce' => 0.52,
+            'hard_bounce' => 0.41,
+            'avg_bounce'  => 0.47,
+            'abuse'       => 0.04,
+            'unsub'       => 0.29
         ),
         'Restaurant and Venue'                   => array(
-            'open'            => 22.56,
-            'click'           => 1.58,
-            'soft_bounce'     => 1.02,
-            'hard_bounce'     => 0.92,
-            'avg_bounce'      => 0.97,
-            'abuse'           => 0.04,
-            'unsub'           => 0.38
+            'open'        => 22.56,
+            'click'       => 1.58,
+            'soft_bounce' => 1.02,
+            'hard_bounce' => 0.92,
+            'avg_bounce'  => 0.97,
+            'abuse'       => 0.04,
+            'unsub'       => 0.38
         ),
         'Retail'                                 => array(
-            'open'            => 23.16,
-            'click'           => 3.26,
-            'soft_bounce'     => 0.66,
-            'hard_bounce'     => 0.6,
-            'avg_bounce'      => 0.63,
-            'abuse'           => 0.04,
-            'unsub'           => 0.03
+            'open'        => 23.16,
+            'click'       => 3.26,
+            'soft_bounce' => 0.66,
+            'hard_bounce' => 0.6,
+            'avg_bounce'  => 0.63,
+            'abuse'       => 0.04,
+            'unsub'       => 0.03
         ),
         'Social Networks and Online Communities' => array(
-            'open'            => 21.98,
-            'click'           => 3.89,
-            'soft_bounce'     => 0.64,
-            'hard_bounce'     => 0.62,
-            'avg_bounce'      => 0.63,
-            'abuse'           => 0.03,
-            'unsub'           => 0.24
+            'open'        => 21.98,
+            'click'       => 3.89,
+            'soft_bounce' => 0.64,
+            'hard_bounce' => 0.62,
+            'avg_bounce'  => 0.63,
+            'abuse'       => 0.03,
+            'unsub'       => 0.24
         ),
         'Software and Web App'                   => array(
-            'open'            => 21.86,
-            'click'           => 3.26,
-            'soft_bounce'     => 1.64,
-            'hard_bounce'     => 1.52,
-            'avg_bounce'      => 1.58,
-            'abuse'           => 0.04,
-            'unsub'           => 0.4
+            'open'        => 21.86,
+            'click'       => 3.26,
+            'soft_bounce' => 1.64,
+            'hard_bounce' => 1.52,
+            'avg_bounce'  => 1.58,
+            'abuse'       => 0.04,
+            'unsub'       => 0.4
         ),
         'Sports'                                 => array(
-            'open'            => 26.57,
-            'click'           => 3.91,
-            'soft_bounce'     => 0.92,
-            'hard_bounce'     => 0.87,
-            'avg_bounce'      => 0.9,
-            'abuse'           => 0.04,
-            'unsub'           => 0.28
+            'open'        => 26.57,
+            'click'       => 3.91,
+            'soft_bounce' => 0.92,
+            'hard_bounce' => 0.87,
+            'avg_bounce'  => 0.9,
+            'abuse'       => 0.04,
+            'unsub'       => 0.28
         ),
         'Telecommunications'                     => array(
-            'open'            => 19.77,
-            'click'           => 2.38,
-            'soft_bounce'     => 1.84,
-            'hard_bounce'     => 1.64,
-            'avg_bounce'      => 1.74,
-            'abuse'           => 0.04,
-            'unsub'           => 0.25
+            'open'        => 19.77,
+            'click'       => 2.38,
+            'soft_bounce' => 1.84,
+            'hard_bounce' => 1.64,
+            'avg_bounce'  => 1.74,
+            'abuse'       => 0.04,
+            'unsub'       => 0.25
         ),
         'Travel and Transportation'              => array(
-            'open'            => 20,
-            'click'           => 2.77,
-            'soft_bounce'     => 1.12,
-            'hard_bounce'     => 0.91,
-            'avg_bounce'      => 1.02,
-            'abuse'           => 0.04,
-            'unsub'           => 0.24
+            'open'        => 20,
+            'click'       => 2.77,
+            'soft_bounce' => 1.12,
+            'hard_bounce' => 0.91,
+            'avg_bounce'  => 1.02,
+            'abuse'       => 0.04,
+            'unsub'       => 0.24
         ),
         'Vitamin Supplements'                    => array(
-            'open'            => 18.12,
-            'click'           => 2.44,
-            'soft_bounce'     => 0.62,
-            'hard_bounce'     => 0.6,
-            'avg_bounce'      => 0.61,
-            'abuse'           => 0.06,
-            'unsub'           => 0.27
+            'open'        => 18.12,
+            'click'       => 2.44,
+            'soft_bounce' => 0.62,
+            'hard_bounce' => 0.6,
+            'avg_bounce'  => 0.61,
+            'abuse'       => 0.06,
+            'unsub'       => 0.27
         )
     );
 
@@ -731,6 +780,7 @@ class MailChimp_Campaign_CSV_Parser
                 'bounce_rate'                           => 0,
                 'campaigns'                             => 0,
                 'clicks'                                => 0,
+                'company_size'                          => $this->company_size[ $this->config['company_size'] ],
                 'end_date'                              => false,
                 'forwarded_opens'                       => 0,
                 'hard_bounces'                          => 0,
@@ -822,34 +872,52 @@ class MailChimp_Campaign_CSV_Parser
           $this->array['summary']['hard_bounces']          += $values['hard_bounces'];
 
           // Average bounce rate
-          $this->array['summary']['bounce_rate'] = ( ! $this->array['summary']['bounce_rate'] ) ?
-                                                   $this->get_average( array( $values['bounce_rate'], $this->array['summary']['bounce_rate'] ) ) :
-                                                   $this->array['summary']['bounce_rate'];
+          $this->array['summary']['bounce_rate']          = ( ! $this->array['summary']['bounce_rate'] ) ?
+                                                            $this->get_average( array(
+                                                                $values['bounce_rate'],
+                                                                $this->array['summary']['bounce_rate']
+                                                            ) ) :
+                                                            $this->array['summary']['bounce_rate'];
 
           // Average trash/spam rate
-          $this->array['summary']['trash_spam_rate'] = ( ! $this->array['summary']['trash_spam_rate'] ) ?
-                                                       $this->get_average( array( $values['trash_spam_rate'], $this->array['summary']['trash_spam_rate'] ) ) :
-                                                       $this->array['summary']['trash_spam_rate'];
+          $this->array['summary']['trash_spam_rate']      = ( ! $this->array['summary']['trash_spam_rate'] ) ?
+                                                            $this->get_average( array(
+                                                                $values['trash_spam_rate'],
+                                                                $this->array['summary']['trash_spam_rate']
+                                                            ) ) :
+                                                            $this->array['summary']['trash_spam_rate'];
 
           // Average abuse complaint rate
           $this->array['summary']['abuse_complaint_rate'] = ( ! $this->array['summary']['abuse_complaint_rate'] ) ?
-                                                            $this->get_average( array( $values['abuse_complaint_rate'], $this->array['summary']['abuse_complaint_rate'] ) ) :
+                                                            $this->get_average( array(
+                                                                $values['abuse_complaint_rate'],
+                                                                $this->array['summary']['abuse_complaint_rate']
+                                                            ) ) :
                                                             $this->array['summary']['abuse_complaint_rate'];
 
           // Average unique open rate
-          $this->array['summary']['unique_open_rate'] = ( ! $this->array['summary']['unique_open_rate'] ) ?
-                                                        $this->get_average( array( $values['open_rate'], $this->array['summary']['unique_open_rate'] ) ) :
-                                                        $this->array['summary']['unique_open_rate'];
+          $this->array['summary']['unique_open_rate']     = ( ! $this->array['summary']['unique_open_rate'] ) ?
+                                                            $this->get_average( array(
+                                                                $values['open_rate'],
+                                                                $this->array['summary']['unique_open_rate']
+                                                            ) ) :
+                                                            $this->array['summary']['unique_open_rate'];
 
           // Average unique click rate
-          $this->array['summary']['unique_click_rate'] = ( ! $this->array['summary']['unique_click_rate'] ) ?
-                                                         $this->get_average( array( $values['click_rate'], $this->array['summary']['unique_click_rate'] ) ) :
-                                                         $this->array['summary']['unique_click_rate'];
+          $this->array['summary']['unique_click_rate']    = ( ! $this->array['summary']['unique_click_rate'] ) ?
+                                                            $this->get_average( array(
+                                                                $values['click_rate'],
+                                                                $this->array['summary']['unique_click_rate']
+                                                            ) ) :
+                                                            $this->array['summary']['unique_click_rate'];
 
           // Average unsubscribe rate
-          $this->array['summary']['unsubscribe_rate'] = ( ! $this->array['summary']['unsubscribe_rate'] ) ?
-                                                        $this->get_average( array( $values['unsubscribe_rate'], $this->array['summary']['unsubscribe_rate'] ) ) :
-                                                        $this->array['summary']['unsubscribe_rate'];
+          $this->array['summary']['unsubscribe_rate']     = ( ! $this->array['summary']['unsubscribe_rate'] ) ?
+                                                            $this->get_average( array(
+                                                                $values['unsubscribe_rate'],
+                                                                $this->array['summary']['unsubscribe_rate']
+                                                            ) ) :
+                                                            $this->array['summary']['unsubscribe_rate'];
 
           // By date
           $this->add_to_group_array( 'by_date', $values['date_timestamp'], $values );
@@ -870,14 +938,14 @@ class MailChimp_Campaign_CSV_Parser
         // Sort array to find highest/lowest campaigns
 
         // Highest/lowest campaign open rate
-        $this->array['by_campaign']                  = $this->sort_array( $this->array['by_campaign'], 'unique_open_rate' );
-        $this->array['summary']['highest_open_rate'] = reset ( $this->array['by_campaign'] );
-        $this->array['summary']['lowest_open_rate']  = end ( $this->array['by_campaign'] );
+        $this->array['by_campaign']                             = $this->sort_array( $this->array['by_campaign'], 'unique_open_rate' );
+        $this->array['summary']['highest_open_rate']            = reset ( $this->array['by_campaign'] );
+        $this->array['summary']['lowest_open_rate']             = end ( $this->array['by_campaign'] );
 
         // Highest/lowest campaign click rate
-        $this->array['by_campaign']                   = $this->sort_array( $this->array['by_campaign'], 'unique_click_rate' );
-        $this->array['summary']['highest_click_rate'] = reset ( $this->array['by_campaign'] );
-        $this->array['summary']['lowest_click_rate']  = end ( $this->array['by_campaign'] );
+        $this->array['by_campaign']                             = $this->sort_array( $this->array['by_campaign'], 'unique_click_rate' );
+        $this->array['summary']['highest_click_rate']           = reset ( $this->array['by_campaign'] );
+        $this->array['summary']['lowest_click_rate']            = end ( $this->array['by_campaign'] );
 
         // Highest/lowest abuse complaint rate
         $this->array['by_campaign']                             = $this->sort_array( $this->array['by_campaign'], 'abuse_complaint_rate' );
@@ -885,19 +953,19 @@ class MailChimp_Campaign_CSV_Parser
         $this->array['summary']['lowest_abuse_complaint_rate']  = end ( $this->array['by_campaign'] );
 
         // Highest/lowest unsubscribe rate
-        $this->array['by_campaign']                         = $this->sort_array( $this->array['by_campaign'], 'unsubscribe_rate' );
-        $this->array['summary']['highest_unsubscribe_rate'] = reset ( $this->array['by_campaign'] );
-        $this->array['summary']['lowest_unsubscribe_rate']  = end ( $this->array['by_campaign'] );
+        $this->array['by_campaign']                             = $this->sort_array( $this->array['by_campaign'], 'unsubscribe_rate' );
+        $this->array['summary']['highest_unsubscribe_rate']     = reset ( $this->array['by_campaign'] );
+        $this->array['summary']['lowest_unsubscribe_rate']      = end ( $this->array['by_campaign'] );
 
         // Highest/lowest spam/trash rate
-        $this->array['by_campaign']                         = $this->sort_array( $this->array['by_campaign'], 'trash_spam_rate' );
-        $this->array['summary']['highest_trash_spam_rate']  = reset ( $this->array['by_campaign'] );
-        $this->array['summary']['lowest_trash_spam_rate']   = end ( $this->array['by_campaign'] );
+        $this->array['by_campaign']                             = $this->sort_array( $this->array['by_campaign'], 'trash_spam_rate' );
+        $this->array['summary']['highest_trash_spam_rate']      = reset ( $this->array['by_campaign'] );
+        $this->array['summary']['lowest_trash_spam_rate']       = end ( $this->array['by_campaign'] );
 
         // Add additional data to the array
         $this->array['summary']['start_date'] = key ( $this->array['by_date'] );
         end ( $this->array['by_date'] );
-        $this->array['summary']['end_date'] = key ( $this->array['by_date'] );
+        $this->array['summary']['end_date']   = key ( $this->array['by_date'] );
         reset ( $this->array['by_date'] );
 
         $this->array['summary']['num_days'] = $this->get_num_days( $this->array['summary']['start_date'], $this->array['summary']['end_date'] );

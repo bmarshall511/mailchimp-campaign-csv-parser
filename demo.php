@@ -11,8 +11,12 @@ if( ! defined( 'APP_ROOT' ) ) {
 }
 
 // Get config options.
-$industry = isset( $_REQUEST['industry'] ) ? $_REQUEST['industry'] : 'Media and Publishing';
-$limit = isset( $_REQUEST['limit'] ) ? $_REQUEST['limit'] : 500;
+$industry     = isset( $_REQUEST['industry'] ) ? $_REQUEST['industry'] : 'Media and Publishing';
+$limit        = isset( $_REQUEST['limit'] ) ? $_REQUEST['limit'] : 500;
+$company_size = isset( $_REQUEST['company_size'] ) ? $_REQUEST['company_size'] : '50+';
+
+// Check if page printable.
+$printable = isset( $_REQUEST['print'] ) && $_REQUEST['print'] ? 1 : 0;
 
 /**
  * Include the MailChimp Report Generator class.
@@ -24,6 +28,18 @@ $MC = new MailChimp_Campaign_CSV_Parser;
 
 // Get data from the MailChimp Report Generator class.
 $MC->config['mailchimp_campaign_export_file'] = 'reports/Nov_11_2014.csv';
+
+/**
+ * Select the company size that relates to the email campaigns
+ *
+ * Available options:
+ *
+ * 1 to 10
+ * 11 to 25
+ * 26 to 50
+ * 50+
+ */
+$MC->config['company_size'] = $company_size;
 
 /**
  * Select the industry that relates to the email campaigns
@@ -81,66 +97,78 @@ $MC->parse_campaign_export( $limit );
 $data = $MC->array;
 
 //print_r($data);
-?>
-<!doctype html>
-<html class="no-js" lang="en">
+?><!doctype html>
+<html lang='en'>
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0'>
+<meta content='#52BAD5' name='msapplication-TileColor'>
+
 <title>MailChimp Campaign CSV Parser Library Demo | Ben Marshall</title>
-<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,400,700' rel='stylesheet' type='text/css'>
+
+<link href='assets/build/img/apple-touch-icon-180x180.png' rel='apple-touch-icon' sizes='180x180'>
+<link href='assets/build/img/touch-icon-192x192.png' rel='icon' sizes='192x192'>
+<link href='assets/build/img/favicon.ico' rel='icon' type='image/vnd.microsoft.icon'>
+<link href='assets/build/img/favicon.ico' rel='shortcut icon'>
+
+<link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,400,700'>
 <link rel="stylesheet" href="assets/build/css/normalize.css">
 <link rel="stylesheet" href="assets/build/css/style.css">
-<?php if ( isset( $_REQUEST['print'] ) && $_REQUEST['print'] ): ?>
-<style>
-.wrapper {
-    max-width: 820px;
-}
-</style>
-<?php endif; ?>
 </head>
-<body class="color-8">
-<?php if ( ! isset( $_REQUEST['print'] ) ): ?>
+<body<?php if ( $printable ): ?>class="body--printable"<?php endif; ?>>
+
+<?php if ( ! $printable ): ?>
 <div class="settings" id="settings">
+    <a href="#" class="settings__toggle" id="settings-toggle"></a>
     <h5>Configuration Settings</h5>
 
-    <p><label>Number of Campaigns</label>
-    <input type="number" value="<?php echo $limit; ?>" id="limit"></p>
+    <p><label for="number-of-campaigns">Number of Campaigns</label>
+    <input id="number-of-campaigns" type="number" value="<?php echo $limit; ?>" id="limit"></p>
 
-    <p><label>Select Industry</label>
+    <p><label for="industry">Industry</label>
     <select id="industry">
         <?php foreach( $MC->industry as $k => $a ): ?>
-            <option value="<?php echo $k; ?>"<?php if( $MC->config['industry'] == $k ): ?> selected="selected"<?php endif; ?>><?php echo $k; ?></option>
+        <option value="<?php echo $k; ?>"<?php if( $MC->config['industry'] == $k ): ?> selected="selected"<?php endif; ?>><?php echo $k; ?></option>
+        <?php endforeach; ?>
+    </select></p>
+
+    <p><label for="company-size">Company Size</label>
+    <select id="company-size">
+        <?php foreach( $MC->company_size as $k => $a ): ?>
+        <option value="<?php echo $k; ?>"<?php if( $MC->config['company_size'] == $k ): ?> selected="selected"<?php endif; ?>><?php echo $k; ?></option>
         <?php endforeach; ?>
     </select></p>
 
     <p><input type="submit" value="Update" id="update"></p>
+    <p><a href="?print=1">Print Report</a></p>
 </div>
 <?php endif; ?>
+
 <div class="wrapper">
-  <header>
-    <h1>MailChimp Campaign CSV Parser Library Demo</h1>
-    <h2><?php echo date( 'F j, Y', $data['summary']['start_date'] ); ?> - <?php echo date( 'F j, Y', $data['summary']['end_date'] ); ?> (<?php echo number_format( $data['summary']['num_days'], 0 ); ?> days)</h2>
-  </header>
-  <section>
-    <h2>Summary</h2>
-    <div class="half">
-      <p>In the past <?php echo number_format( $data['summary']['num_days'], 0 ); ?> days starting <?php echo date( 'D., F j, Y', $data['summary']['start_date'] ); ?>, <?php echo number_format( $data['summary']['campaigns'], 0 ); ?> campaigns have been sent totaling <?php echo number_format( $data['summary']['recipients'], 0 ); ?> recipients. That's an average of <?php echo number_format( $data['summary']['recipients'] / $data['summary']['campaigns'], 0 ); ?> emails per campaign and <?php echo number_format( $data['summary']['recipients'] / $data['summary']['num_days'], 0 ); ?> recipients per day.</p>
-      <p>On average, <?php echo $data['summary']['bounce_rate']; ?>% emails were bounced back, <?php echo $data['summary']['trash_spam_rate']; ?>% were trashed or marked spam, <?php echo $data['summary']['abuse_complaint_rate']; ?>% reported an abuse complaint and <?php echo $data['summary']['unique_open_rate']; ?>% were opened with <?php echo $data['summary']['unique_click_rate']; ?>% of those resulting in a click.</p>
-      <p>With a total of <?php echo number_format( $data['summary']['unique_clicks']); ?> unique clicks, each click (lead) estimated at $<?php echo $MC->config['lead_value']; ?> and an average <?php echo $MC->config['conversion_rate'] * 100; ?>% conversion rate, these campaigns could potentially earn $<?php echo number_format(($data['summary']['unique_clicks'] * $MC->config['conversion_rate']) * $MC->config['lead_value'], 2) ?> in sales.</p>
-    </div>
-    <div class="half">
-      <ul>
-        <li>Total Campaigns <div><?php echo number_format( $data['summary']['campaigns'], 0 ); ?></div>
-        <li>Total Recipients <div><?php echo number_format( $data['summary']['recipients'], 0 ); ?></div>
-        <li>Trash / Spam <div> <?php echo number_format( $data['summary']['trash_spam'], 0 ); ?> (<?php echo round( $data['summary']['trash_spam_rate'], 2 ); ?>%)</div>
-        <li>
-          <?php if ( $data['summary']['industry']['avg_bounce'] > $data['summary']['bounce_rate'] ): ?>
-            <div class="ball bg-2"></div>
-          <?php else: ?>
-            <div class="ball bg-4"></div>
-          <?php endif; ?>
-          Bounces <div> <?php echo number_format( $data['summary']['total_bounces'], 0 ); ?> (<?php echo $data['summary']['bounce_rate']; ?>%)</div>
+    <header>
+        <h1>MailChimp Campaign CSV Parser Library Demo</h1>
+        <h2><?php echo date( 'F j, Y', $data['summary']['start_date'] ); ?> - <?php echo date( 'F j, Y', $data['summary']['end_date'] ); ?> (<?php echo number_format( $data['summary']['num_days'], 0 ); ?> days)</h2>
+    </header>
+    <section>
+        <h2>Summary</h2>
+        <div class="half">
+            <p>In the past <?php echo number_format( $data['summary']['num_days'], 0 ); ?> days starting <?php echo date( 'D., F j, Y', $data['summary']['start_date'] ); ?>, <?php echo number_format( $data['summary']['campaigns'], 0 ); ?> campaigns have been sent totaling <?php echo number_format( $data['summary']['recipients'], 0 ); ?> recipients. That's an average of <?php echo number_format( $data['summary']['recipients'] / $data['summary']['campaigns'], 0 ); ?> emails per campaign and <?php echo number_format( $data['summary']['recipients'] / $data['summary']['num_days'], 0 ); ?> recipients per day.</p>
+            <p>On average, <?php echo $data['summary']['bounce_rate']; ?>% emails were bounced back, <?php echo $data['summary']['trash_spam_rate']; ?>% were trashed or marked spam, <?php echo $data['summary']['abuse_complaint_rate']; ?>% reported an abuse complaint and <?php echo $data['summary']['unique_open_rate']; ?>% were opened with <?php echo $data['summary']['unique_click_rate']; ?>% of those resulting in a click.</p>
+            <p>With a total of <?php echo number_format( $data['summary']['unique_clicks']); ?> unique clicks, each click (lead) estimated at $<?php echo $MC->config['lead_value']; ?> and an average <?php echo $MC->config['conversion_rate'] * 100; ?>% conversion rate, these campaigns could potentially earn $<?php echo number_format(($data['summary']['unique_clicks'] * $MC->config['conversion_rate']) * $MC->config['lead_value'], 2) ?> in sales.</p>
+        </div>
+        <div class="half">
+            <ul>
+                <li>Total Campaigns <div><?php echo number_format( $data['summary']['campaigns'], 0 ); ?></div>
+                <li>Total Recipients <div><?php echo number_format( $data['summary']['recipients'], 0 ); ?></div>
+                <li>Trash / Spam <div> <?php echo number_format( $data['summary']['trash_spam'], 0 ); ?> (<?php echo round( $data['summary']['trash_spam_rate'], 2 ); ?>%)</div>
+                <li>
+                <?php if ( $data['summary']['industry']['avg_bounce'] > $data['summary']['bounce_rate'] ): ?>
+                  <div class="ball bg-2"></div>
+                <?php else: ?>
+                  <div class="ball bg-4"></div>
+                <?php endif; ?>
+                Bounces <div> <?php echo number_format( $data['summary']['total_bounces'], 0 ); ?> (<?php echo $data['summary']['bounce_rate']; ?>%)</div>
         <li>
           <?php if ( $data['summary']['industry']['open'] < $data['summary']['unique_open_rate'] ): ?>
             <div class="ball bg-2"></div>
@@ -255,12 +283,13 @@ $data = $MC->array;
     </div>
   </section>
   <section>
-    <h2><?php echo $MC->config['industry'] ?> Industry Rates vs. Campaign Rates</h2>
+        <h2>Campaigns vs. Industry &amp; Company Size (<?php echo $MC->config['company_size'] ?>) Rates</h2>
     <table>
       <thead>
         <tr>
           <th>Statistic</th>
-          <th class="right">Industry</th>
+          <th class="right"><?php echo $MC->config['industry'] ?> Industry</th>
+          <th class="right"><?php echo $MC->config['company_size'] ?> Employees</th>
           <th class="right">Campaigns</th>
           <th></th>
           <th class="right" width="71">Difference</th>
@@ -270,6 +299,7 @@ $data = $MC->array;
         <tr>
           <td><strong>Open Rate</strong></td>
           <td class="right"><?php echo $data['summary']['industry']['open'] ?>%</td>
+          <td class="right"><?php echo $data['summary']['company_size']['open'] ?>%</td>
           <td class="right"><?php echo $data['summary']['unique_open_rate']; ?>%</td>
           <td class="right">
             <?php if ( $data['summary']['industry']['open'] < $data['summary']['unique_open_rate'] ): ?>
@@ -290,6 +320,7 @@ $data = $MC->array;
         <tr>
           <td><strong>Click Rate</strong></td>
           <td class="right"><?php echo $data['summary']['industry']['click'] ?>%</td>
+          <td class="right"><?php echo $data['summary']['company_size']['click'] ?>%</td>
           <td class="right"><?php echo $data['summary']['unique_click_rate']; ?>%</td>
           <td class="right">
             <?php if ( $data['summary']['industry']['click'] < $data['summary']['unique_click_rate'] ): ?>
@@ -310,6 +341,7 @@ $data = $MC->array;
         <tr>
           <td><strong>Bounce Rate</strong></td>
           <td class="right"><?php echo $data['summary']['industry']['avg_bounce'] ?>%</td>
+          <td class="right"><?php echo $data['summary']['company_size']['avg_bounce'] ?>%</td>
           <td class="right"><?php echo $data['summary']['bounce_rate']; ?>%</td>
           <td class="right">
             <?php if ( $data['summary']['industry']['avg_bounce'] > $data['summary']['bounce_rate'] ): ?>
@@ -330,6 +362,7 @@ $data = $MC->array;
         <tr>
           <td><strong>Abuse Compliant Rate</strong></td>
           <td class="right"><?php echo $data['summary']['industry']['abuse'] ?>%</td>
+          <td class="right"><?php echo $data['summary']['company_size']['abuse'] ?>%</td>
           <td class="right"><?php echo $data['summary']['abuse_complaint_rate']; ?>%</td>
           <td class="right">
             <?php if ( $data['summary']['industry']['abuse'] > $data['summary']['abuse_complaint_rate'] ): ?>
@@ -350,6 +383,7 @@ $data = $MC->array;
         <tr>
           <td><strong>Unsubscribe Rate</strong></td>
           <td class="right"><?php echo $data['summary']['industry']['unsub'] ?>%</td>
+          <td class="right"><?php echo $data['summary']['company_size']['unsub'] ?>%</td>
           <td class="right"><?php echo $data['summary']['unsubscribe_rate']; ?>%</td>
           <td class="right">
             <?php if ( $data['summary']['industry']['unsub'] > $data['summary']['unsubscribe_rate'] ): ?>
@@ -444,6 +478,12 @@ $( function() {
         color3_alt = "rgba(254, 190, 18, 1)",
         color4     = "rgba(219, 58, 27, 0.2)",
         color4_alt = "rgba(219, 58, 27, 1)";
+
+    $( "#settings-toggle" ).click( function( e ) {
+        e.preventDefault();
+
+        $( ".settings" ).toggleClass( "settings--expanded" );
+    });
 
     $( "#cf" ).change( function() {
         var val = $( "option:selected", $( this ) ),
