@@ -20,9 +20,20 @@ It's pretty straightforward to start using the library. All you need to get star
     // Set the name of the CSV file to use.
     $MC->config['mailchimp_campaign_export_file'] = 'downloaded-csv-file.csv';
 
+    // Select the company size that relates to the email campaigns
+    $MC->config['company_size'] = '50+';
+
     // Select the industry that relates to the email campaigns.
     $MC->config['industry'] = 'Media and Publishing';
 
     // Get and parse the first 500 campaigns.
     $MC->parse_campaign_export( 500 );
     $data = $MC->array;
+
+##Change Log
+
+###Version 1.1.0
+
+* Added company size statistics
+* Updated code formatting
+* Enhanced demo with more stats & options
